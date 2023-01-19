@@ -29,8 +29,9 @@
 
 
 import { createRouter, createWebHistory } from 'vue-router'
-import Signin from '../views/Signin.vue';
 import Home from '../views/Home.vue';
+import Signin from '../views/Signin.vue';
+import Events from '../views/Events.vue';
 // import Login from '../components/Login.vue';
 // import SignIn from '../components/SignIn.vue';
 
@@ -41,8 +42,6 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: Home,
-
-      
     },
     {
       path: '/signin',
@@ -58,6 +57,11 @@ const router = createRouter({
       //     component: SignIn
       //   }
       // ]
+    },
+    {
+      path: '/events',
+      name: 'events',
+      component: Events,
     }
   ]
 })

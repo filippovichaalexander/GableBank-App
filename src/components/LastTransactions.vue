@@ -73,19 +73,15 @@
               </div>
             </div>
           
-          <button class="all-oper-btn">Все операции</button>        
+          <button class="all-oper-btn" @click="toEventsView">Все операции</button>        
           </div>
 </template>
 
 <script>
 export default {
-  data() {
-    return {
-      checkTransactions() {
-        // if(this.$store.state.lastTransactions) {
-        //   return this.$store.state.lastTransactions
-        // }
-      }
+  methods: {
+    toEventsView() {
+      this.$router.push('/events');  
     }
   }
 }

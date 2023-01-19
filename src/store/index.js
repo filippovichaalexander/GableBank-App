@@ -163,13 +163,27 @@ const store = createStore({
     }
   },
   getters: {
-    // getWalletTitle(id) {
-    //   this.wallets.find((wallet) => {
-    //     if(id === wallet.id) {
-    //       return wallet.title
-    //     }
-    //   })
-    // }
+    // getWalletTitle : (state) => (walletId) => {
+    //   console.log("кошелек", state.wallets.filter(wallet => wallet.Id === walletId))
+    //   console.log("кошелек1", state.wallets[0]);
+    //   console.log("кошелек2", state.wallets[1]);
+    //   console.log("Айди", walletId)
+    //   return state.wallets.filter(wallet => wallet.Id === walletId);
+    // },
+    getWalletTitle : (state) => (walletId) => {
+      console.log("кошельки", state.wallets)
+        return state.wallets.forEach((wallet) => {
+        console.log("кошелек из стора", wallet.Id)
+        console.log("кошелек из компоненты", walletId)
+        if(wallet.Id === walletId) {
+          console.log("кошелек if", wallet)
+          return wallet
+        }
+        else {
+          console.log("кошелек else", wallet)
+        }
+      });      
+    }
   }
 });
 

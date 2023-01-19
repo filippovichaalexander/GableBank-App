@@ -1,31 +1,23 @@
     <template>
-        <div 
-        v-if="displayModal" 
-        class="modal__wrapper" 
-        @click.self="close"
-        >
-            <div class="modal__window">
-                <div v-if="accountDeleted" class="account--deleted">
-                    <h2>Счёт {{getWalletTitle}} успешно удалён</h2>   
-                    <!-- Можно добавить обратный таймер с кнопкой Отмена -->
+        <Modal @close="this.close()" :displayModal="displayModal">
+            <div v-if="accountDeleted" class="account--deleted">
+                <h2>Счёт {{walletTitle}} успешно удалён</h2>   
+                <!-- Можно добавить обратный таймер с кнопкой Отмена -->
+            </div>
+            <div v-else class="modal__content-wrapper">
+                <div class="modal__header">
+                    <h1 class="modal__title">Вы уверены что хотите удалить cчёт {{walletTitle}}?</h1>
                 </div>
-                <div v-else class="modal__wrapper">
-                    <div @click="close" class="btn-close-wrapper">
-                        <img src="../../assets/plus.png" class="btn-close" alt="">
-                    </div>
-                    <div class="modal__header">
-                        <h1 class="modal__title">Вы уверены что хотите удалить Счёт {{getWalletTitle}}?</h1>
-                    </div>
-                    <div class="modal__content">    
-                        <button class="modal__purpose-btn" @click="deleteWallet">Да</button>
-                        <button class="modal__purpose-btn" @click="close">Нет</button>
-                    </div>
+                <div class="modal__content-btn-wrapper">    
+                    <button class="modal__purpose-btn" @click="deleteWallet">Да</button>
+                    <button class="modal__purpose-btn btn-2" @click="close">Нет</button>
                 </div>
             </div>
-        </div>
+        </Modal>
     </template>
     
     <script>
+    import Modal from "./Modal.vue";
     export default {
         data() {
             return {
@@ -34,29 +26,28 @@
         },
         props: {
             displayModal : Boolean,
-            walletId : Number
+            walletId : [String, Number]
+        },
+        components: {
+            Modal
         },
         computed: {
-            getWalletTitle() {
-                // return this.$store.state.wallets.title                             
-                return this.$store.getters.getWalletTitle                //Как получить именно нужный title ?
+            walletTitle() {                         
+                return this.$store.getters.getWalletTitle(this.walletId);                
             }
         },
         methods: {
             close() {
-                this.$emit('close')       
-            },
-            closeDeleteModal() {
-                this.$emit('closeDeleteModal')
+                this.$emit('close')
             },
             deleteWallet() {
             this.$store.dispatch('deleteWallet', this.walletId).then(response => {
                 if(response){
-                    alert("Счёт успешно удалён");
+                    // alert("Счёт успешно удалён");
+                    // this.accountDeleted = true
                     setTimeout(() => {
-                        accountDeleted = true
-                    }, 500);
-                    this.closeDeleteModal();
+                        this.close();
+                    }, 1000);
                 }
                 else{
                     alert("Произошла ошибка");
@@ -72,6 +63,7 @@
 <style scoped>
 .modal__header {
     position: relative;
+    width: 80%;
 }
 .btn-close-wrapper {
     position: absolute;
@@ -106,6 +98,7 @@
 }
 .modal__window {
     padding: 40px;
+    padding-bottom: 100px;
     z-index: 10;
     background-color: #fff;
     position: absolute;
@@ -120,9 +113,6 @@
 .modal__header,
 .modal__content {
     margin: 0 auto;
-}
-.modal__header {
-    max-width: 65%;
 }
 .modal__title {
     /* display: inline-block; */
@@ -241,25 +231,11 @@
     padding: 20px;
     width: 30%;
 }
-/* странное поведение */
-.select-header {
-    text-align: left;    
-}
-/* странное поведение */
-
-/* Translation */
-.purpose-enter-active,
-.purpose-leave-active {
-    transition: all 2s ease;
-}
-.purpose-enter-from,
-.purpose-leave-to {
-transform: translateY(-20px);
-opacity: 0;
-}
-.purpose-enter-active,
-.purpose-leave-active {
-transition: all 1s ease;
+.modal__content-btn-wrapper {
+    margin-top: 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 </style>
 

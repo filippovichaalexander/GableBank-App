@@ -1,14 +1,16 @@
 <template>
   <div class="accarts">
     <teleport to="body">
-      <bAccountModal :displayModal="displayModal" @close="closeModal"/>
-      <DeletebAccountModal 
-      :displayModal="displayDeleteModal" 
-      :walletId="activeWallet"
-      @close="closeDeleteModal"
-      />
-      <!-- :getWalletTitle="getWalletTitle()" -->
+      <bAccountModal :displayModal="displayModal" @close="closeModal" />
     </teleport>
+    <teleport to="body">
+    <DeletebAccountModal 
+    :displayModal="displayDeleteModal" 
+    :walletId="activeWallet"
+    @close="closeDeleteModal"
+    />
+    </teleport>
+    <!-- :getWalletTitle="getWalletTitle()" -->
     <div class="accarts__wrapper">
       <h2 class="accarts__title">Счета и карты</h2>
       <div class="accarts__content">
@@ -20,11 +22,11 @@
             </p>
             <span class="accarts__item-value">{{wallet.Total}}</span>&nbsp;
             <!-- условная отрисовка символа валюты   -->
-            <span v-if="wallet.Currency === RUB">&#x20bd;</span>
-            <span v-else-if="wallet.Currency === USD">&#36;</span>
-            <span v-else-if="wallet.Currency === BGN">&#1083;</span>
-            <span v-else-if="wallet.Currency === RON">&#108;</span>
-            <span v-else-if="wallet.Currency === iSK">&#107;</span>
+            <span v-if="wallet.Currency === 'RUB'">&#x20bd;</span>
+            <span v-else-if="wallet.Currency === 'USD'">&#36;</span>
+            <span v-else-if="wallet.Currency === 'BGN'">&#1083;</span>
+            <span v-else-if="wallet.Currency === 'RON'">&#108;</span>
+            <span v-else-if="wallet.Currency === 'iSK'">&#107;</span>
           </div>
           <div class="accarts__item-btns">
             <div class="accarts__item-edit">
@@ -48,7 +50,7 @@
             <!-- <div class="create-baccount-img"></div> -->
           </div>
           <p class="create-baccount-text">Создать счёт</p>
-          <p v-if="showBankAccountCreated">Вами только что был создан новый счёт Black {{ currency }}</p> 
+          <!-- <p v-if="showBankAccountCreated">Вами только что был создан новый счёт Black {{ currency }}</p>  -->
         </div>
       </div>
     </div>
@@ -62,8 +64,8 @@ export default {
   data() {
     return {
       displayModal: false,
-      showBankAccountCreated: false,
       displayDeleteModal: false,
+      showBankAccountCreated: false,
       activeWallet: false
     }
   },
@@ -81,6 +83,7 @@ export default {
   },
   mounted() {           // для показа кошельков, проверяет если есть
     this.$store.dispatch('getWallets')
+    // добавить анимацию для строки только что созданного кошелька
   },
   methods: {
     showModal() {
@@ -89,26 +92,15 @@ export default {
     deleteWallet(id) {
       this.displayDeleteModal = true;
       this.activeWallet = Number(id);
-      // Очищай activeWallet при закрытии
     },
     closeModal() {
-      // if(currency) {
-        // setTimeout(() => {
-        //   this.showBankAccountCreated = true
-        // }, 4000)// неоюходима ли эта строка ?
         this.displayModal = false
-
-      // }
     },
     closeDeleteModal() {
         this.displayDeleteModal = false
     },
-    // getWalletTitle(id) {
-    //   // return this.$store.state.wallets.title                             
-    //   return this.$store.getters.getWalletTitle(id)                //Как получить именно нужный title ?
-    // },
-    editWallet(token) {
-      this.$store.dispatch('editWallet', token).then(response => {
+    editWallet(id) {
+      this.$store.dispatch('editWallet', id).then(response => {
         if(response){
           showModal();
             // alert("Счёт успешно удалён");

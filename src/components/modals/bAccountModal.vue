@@ -1,89 +1,82 @@
 <template>
-  <div 
-  v-if="displayModal" 
-  class="modal__wrapper" 
-  @click.self="close"
-  >
-    <div class="modal__window">
-        <div @click="close" class="btn-close-wrapper">
-            <img src="../../assets/plus.png" class="btn-close" alt="">
-        </div>
-        <div class="modal__header">
-            <h1 class="modal__title">Создайте новый счёт</h1>
-        </div>
-        <div class="modal__content">
-            <div class="modal__purpose-form">
-                <div class="modal__currency">
-                    <input placeholder="Введите название счета" v-model="title" />
-                    <select name="currency" id="currency" class="modal__currency-sel" v-model="currency">
-                        <option value="" disabled="disabled" selected="selected" class="select-header">Выберете валюту</option>
-                        <option value="USD">USD</option>
-                        <option value="RUB">RUB</option>
-                        <option value="BGN">BGN</option>
-                        <option value="RON">RON</option>
-                        <option value="ISK">ISK</option>
-                    </select>              
-                </div>
-                <div class="modal__purpose">
-                    <div class="modal__purpose-radio-wrapper">
-                        <div class="modal__purpose-left">
-                            <h4>Добавить цель</h4>
-                            <p class="modal__purpose-left-text">Накопите на большую покупку, рассчитав сумму ежемесячного платежа</p>
-                        </div>
-                        <input type="checkbox" class="modal__purpose-right" @click="showPurpose"/>
+    <Modal @close="this.close()" :displayModal="displayModal">
+        <div class="modal__window-bottom">
+            <div class="modal__header">
+                <h1 class="modal__title">Создайте новый счёт</h1>
+            </div>
+            <div class="modal__content">
+                <div class="modal__purpose-form">
+                    <div class="modal__currency">
+                        <input placeholder="Введите название счета" v-model="title" />
+                        <select name="currency" id="currency" class="modal__currency-sel" v-model="currency">
+                            <option value="" disabled="disabled" selected="selected" class="select-header">Выберете валюту</option>
+                            <option value="USD">USD</option>
+                            <option value="RUB">RUB</option>
+                            <option value="BGN">BGN</option>
+                            <option value="RON">RON</option>
+                            <option value="ISK">ISK</option>
+                        </select>              
                     </div>
-                    <transition name="purpose">
-                        <div class="modal__purpose-bottom-wrapper" v-show="viewPurpose">
-                            <input type="text" class="modal__purpose-title" placeholder="Название цели" v-model="purposeName">
-                            <div class="modal__purpose-bottom">
-                                <label for="purpose-amount">Введите сумму и месяц, к которому хотите накопить</label>
-                                <div  class="modal__purpose-bottom-target">
-                                    <div class="modal__purpose-amount-wrapper">
-                                        <input type="text" 
-                                        id="purpose-amount" 
-                                        class="modal__purpose-amount" 
-                                        placeholder="Сумма" 
-                                        v-model="purposeAmount">
-                                        <span>${{ currency }}</span>
+                    <div class="modal__purpose">
+                        <div class="modal__purpose-radio-wrapper">
+                            <div class="modal__purpose-left">
+                                <h4>Добавить цель</h4>
+                                <p class="modal__purpose-left-text">Накопите на большую покупку, рассчитав сумму ежемесячного платежа</p>
+                            </div>
+                            <input type="checkbox" class="modal__purpose-right" @click="showPurpose"/>
+                        </div>
+                        <transition name="purpose">
+                            <div class="modal__purpose-bottom-wrapper" v-show="viewPurpose">
+                                <input type="text" class="modal__purpose-title" placeholder="Название цели" v-model="purposeName">
+                                <div class="modal__purpose-bottom">
+                                    <label for="purpose-amount">Введите сумму и месяц, к которому хотите накопить</label>
+                                    <div  class="modal__purpose-bottom-target">
+                                        <div class="modal__purpose-amount-wrapper">
+                                            <input type="text" 
+                                            id="purpose-amount" 
+                                            class="modal__purpose-amount" 
+                                            placeholder="Сумма" 
+                                            v-model="purposeAmount">
+                                            <span>${{ currency }}</span>
+                                        </div>
+                                        <input type="date" 
+                                        id="purpose-time" 
+                                        class="modal__purpose-time" 
+                                        placeholder="Выберете месяц"
+                                        v-model="purposeTime"
+                                        />
                                     </div>
-                                    <input type="date" 
-                                    id="purpose-time" 
-                                    class="modal__purpose-time" 
-                                    placeholder="Выберете месяц"
-                                    v-model="purposeTime"
-                                    />
                                 </div>
                             </div>
-                        </div>
-                    </transition>
+                        </transition>
+                    </div>
+                    <button class="modal__purpose-btn" @click="createNewBankAccount($event)">Создать счёт</button>
                 </div>
-                <button class="modal__purpose-btn" @click="createNewBankAccount($event)">Создать счёт</button>
             </div>
         </div>
-    </div>
-  </div>
+    </Modal>
 </template>
 
 <script>
+import Modal from "./Modal.vue";
 export default {
     data() {
         return {
-
             viewPurpose: false,
             title: '',
             currency: '',
             purposeName: '',
             purposeAmount: '',
             purposeTime: ''
-            
         }
+    },
+    components : {
+        Modal
     },
     props: ["displayModal"],
     methods: {
         close() {
-            // this.$emit('close', currency);  //отследит в родительской компоненте событие закрытия окна
-            this.$emit('close')
-            this.viewPurpose = false;       
+            this.$emit('close');      
         },
         showPurpose() {
             this.viewPurpose = !this.viewPurpose;  
@@ -110,7 +103,10 @@ export default {
                     // создать параграф "Счёт с таким именем уже существует"
                 }
             })
+
+            this.close();
             
+            this.title = '',
             this.currency = '',
             this.purposeName = '',
             this.purposeAmount = '',
@@ -118,8 +114,6 @@ export default {
         }
     }
 }
-
-// как валидировать пропсы ?
 </script>
 
 <style scoped>

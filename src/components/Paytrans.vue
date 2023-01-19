@@ -1,21 +1,21 @@
 <template>
-    <div class="paytrans">
-        <teleport to="body">
-          <TransactionsModal1 :displayModal="displayModal" @close="closeModal"/>
-        </teleport>
-        <h2 class="paytrans__title">Платежи и переводы</h2>
-        <div class="paytrans__content">
-            <div class="paytrans__item">
+  <div class="paytrans">
+      <teleport to="body">
+        <TransactionsModal1 :displayModal="displayModal" @close="closeModal"/>
+      </teleport>
+      <h2 class="paytrans__title">Платежи и переводы</h2>
+      <div class="paytrans__content">
+          <div class="paytrans__item">
             <p class="paytrans__item-title">По реквизитам</p>
-            </div>
-            <div class="paytrans__item">
+          </div>
+          <div class="paytrans__item">
             <p class="paytrans__item-title">Запрос денег</p>
-            </div>
-            <div class="paytrans__item">
-            <p class="paytrans__item-title" @click="showTransactionModal">Перевести деньги</p>
-            </div>
-        </div>
-    </div>
+          </div>
+          <div class="paytrans__item" @click="showTransactionModal">
+            <p class="paytrans__item-title">Перевести деньги</p>
+          </div>
+      </div>
+  </div>
 </template>
 
 <script>
@@ -32,7 +32,10 @@ export default {
   },
   methods: {
     showTransactionModal() {
-      console.log('hello')
+      this.displayModal = true;
+    },
+    closeModal() {
+      this.displayModal = false
     }
   }
 }
@@ -56,6 +59,9 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.paytrans__item:hover {
+  cursor: pointer;
 }
 .paytrans__item-title {
   margin: 0 auto;
