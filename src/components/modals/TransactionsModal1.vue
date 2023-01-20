@@ -8,13 +8,11 @@
                 <select name="bankAccount" 
                 id="bankAccount" 
                 class="modal__bankaccount-sel" 
-                v-model="walletTitle">
+                v-model="wallet">
                     <option value="" disabled="disabled" selected="selected" class="select-header">Выберете счёт</option>
-                    <option  v-for="wallet in wallets" :key="wallet.id">{{wallet.Title}}</option>
+                    <option  v-for="wallet in wallets" :key="wallet.Id" :value="wallet.Id">{{wallet.Title}}</option>
                 </select>
-                <!-- {{walletCurrency.Currency}}  -->
-                <span>
-                    currency</span>
+                <span v-if="wallet != 0">{{walletCurrency}}</span>
                 <input placeholder="Введите сумму" v-model="paymentAmount" />
                 <div class="modal__currency">
                     <input placeholder="Введите имя получателя" v-model="receiverFullName" />
@@ -38,13 +36,12 @@
 </template>
 
 <script>
-
+// логику можно оставить для передачи денег с одного счёта на другой, сделать PUT,
 import Modal from './Modal.vue'
 export default {
     data() {
         return {
-            wallet: false,
-            walletTitle: '',
+            wallet: 0,
             receiverFullName: '',
             receiverPhoneNumber: '',
             receiverBrandName: '',
@@ -61,6 +58,11 @@ export default {
         wallets() {
             return this.$store.state.wallets
         },
+        walletCurrency() {     
+            if(this.wallet != 0){
+                return this.$store.getters.wallet(this.wallet).Currency;                
+            }                    
+        }
         // walletCurrency() {  
         //     if(walletTitle)  {
         //         //находить валюту выбранного кошелька

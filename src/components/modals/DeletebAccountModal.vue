@@ -26,14 +26,14 @@
         },
         props: {
             displayModal : Boolean,
-            walletId : [String, Number]
+            walletId : Number
         },
         components: {
             Modal
         },
         computed: {
             walletTitle() {                         
-                return this.$store.getters.getWalletTitle(this.walletId);                
+                return this.$store.getters.wallet(this.walletId).Title;                
             }
         },
         methods: {
