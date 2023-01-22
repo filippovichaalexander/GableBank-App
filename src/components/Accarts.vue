@@ -1,14 +1,25 @@
 <template>
   <div class="accarts">
     <teleport to="body">
-      <bAccountModal :displayModal="displayModal" @close="closeModal" />
+      <bAccountModal 
+      :displayModal="displayModal" 
+      @close="closeModal" 
+      :walletId="activeWallet"
+      />
     </teleport>
     <teleport to="body">
-    <DeletebAccountModal 
-    :displayModal="displayDeleteModal" 
-    :walletId="activeWallet"
-    @close="closeDeleteModal"
-    />
+      <DeletebAccountModal 
+      :displayModal="displayDeleteModal" 
+      :walletId="activeWallet"
+      @close="closeDeleteModal"
+      />
+    </teleport>
+    <teleport to="body">
+      <EditAccountModal 
+      :displayModal="displayEditModal" 
+      :walletId="activeWallet"
+      @close="closeEditModal"
+      />
     </teleport>
     <!-- :getWalletTitle="getWalletTitle()" -->
     <div class="accarts__wrapper">
@@ -60,21 +71,24 @@
 <script>
 import bAccountModal from './modals/bAccountModal.vue';
 import DeletebAccountModal from './modals/DeletebAccountModal.vue';
+import EditAccountModal from './modals/EditAccountModal.vue';
 export default {
   data() {
     return {
       displayModal: false,
       displayDeleteModal: false,
+      displayEditModal: false,
       showBankAccountCreated: false,
       activeWallet: false
     }
   },
   components: {
     bAccountModal,
-    DeletebAccountModal
+    DeletebAccountModal,
+    EditAccountModal
   },
   computed: {
-    wallets() {                             // называть как переменную
+    wallets() {                             
         if(this.$store.state.wallets) {
         console.log('wallet')
         return this.$store.state.wallets
@@ -93,23 +107,18 @@ export default {
       this.displayDeleteModal = true;
       this.activeWallet = Number(id);
     },
+    editWallet(id) {
+      this.displayEditModal = true;
+      this.activeWallet = Number(id);
+    },
     closeModal() {
         this.displayModal = false
     },
     closeDeleteModal() {
         this.displayDeleteModal = false
     },
-    editWallet(id) {
-      this.$store.dispatch('editWallet', id).then(response => {
-        if(response){
-          showModal();
-            // alert("Счёт успешно удалён");
-            // создать параграф "Счёт успешно удалён" в компоненте Accards
-        }
-        else{
-            alert("Произошла ошибка");
-        }
-      })
+    closeEditModal() {
+        this.displayEditModal = false
     }
   }
 }

@@ -39,29 +39,36 @@ export default {
     background-color: grey;
   }
   .preloader__wrapper {
-    position:absolute;
+    position: absolute;
     left: 50%;
     top: 50%;
     width: 20%;
     height: 15%;
-    transform: translate(-50%, -50%);
+    transform: scale(0.6) translateX(-50%);
+    /* transform: translate(-50%, -50%); */
+  }
+  .preloader__content {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
   }
   /* .preloader__content {
     border: 1px solid #fff;
     border-radius: 20px;
   } */
   .preloader__title {
-    margin-bottom: 20px;
+    /* margin-bottom: -60px; */
+    /* text-align: center; */
+    margin-top: -60px;
+    /* font-size: 23px; */
     text-align: center;
-    margin-top: 50px;
-    font-size: 23px;
     font-style: italic;
 
     color: #fff;
 
   }
   .preloader__text {
-    text-align: center;
+    /* text-align: center; */
     color: #fff;
   }
 </style>

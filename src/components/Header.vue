@@ -10,7 +10,7 @@
               </div>
               <nav class="nav">
                   <span class="nav__item">Платежи</span>
-                  <span class="nav__item">События</span>
+                  <span class="nav__item" @click="toEventsView">События</span>
                   <span class="nav__item">Бонусы</span>
                   <span class="nav__item">Кошелёк</span>
                   <span class="nav__item">Настройки</span>
@@ -34,7 +34,10 @@ export default {
         if(this.user) {             // сперва проверить если залогинен
           this.$router.push('/');  
         }
-      }
+      },
+      toEventsView() {
+      this.$router.push('/events');  
+    }
     }
 }
 </script>

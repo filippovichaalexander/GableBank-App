@@ -1,14 +1,17 @@
 <template>
     <Modal @close="this.close()" :displayModal="displayModal">
-        <div class="modal__window-bottom">
+        <div v-if="accountCreated" class="account-created">
+            <h3>Счёт {{walletTitle}} успешно создан</h3>
+        </div>
+        <div v-else class="modal__window-bottom">
             <div class="modal__header">
                 <h1 class="modal__title">Создайте новый счёт</h1>
             </div>
             <div class="modal__content">
                 <div class="modal__purpose-form">
                     <div class="modal__currency">
-                        <input placeholder="Введите название счета" v-model="title" />
-                        <select name="currency" id="currency" class="modal__currency-sel" v-model="currency">
+                        <input placeholder="Введите название счета" v-model="title" required/>
+                        <select name="currency" id="currency" class="modal__currency-sel" v-model="currency" required>
                             <option value="" disabled="disabled" selected="selected" class="select-header">Выберете валюту</option>
                             <option value="USD">USD</option>
                             <option value="RUB">RUB</option>
@@ -62,6 +65,7 @@ import Modal from "./Modal.vue";
 export default {
     data() {
         return {
+            accountCreated: false,
             viewPurpose: false,
             title: '',
             currency: '',
@@ -74,6 +78,11 @@ export default {
         Modal
     },
     props: ["displayModal"],
+    computed: {
+        walletTitle() {                         
+            return this.$store.getters.wallet(this.walletId).Title;                
+        }
+    },
     methods: {
         close() {
             this.$emit('close');      
@@ -95,16 +104,32 @@ export default {
             };
             this.$store.dispatch('addWallet', wallet).then(response => {
                 if(response){
-                    alert("Счёт успешно добавлен");
-                    // создать параграф "Счёт успешно добавлен" в компоненте Accards
+
+                    // alert("Счёт успешно добавлен");
+                    let regTitle = /[A-Za-z]{1,5}/          // || this.title.length >= 5
+
+                    if (this.title.match(regTitle)
+
+                    && 
+                    this.currency) {
+                        this.accountCreated = true
+                        
+                        setTimeout(() => {
+                            this.methods.close();
+                        }, 1000);
+                        showComplete();
+                    } else if (this.title.match(!regTitle)) {
+                        // display regezErrorTItile = true
+                    } else if (this.currency === '') {
+                        // display errorCurrency = true
+                    }
                 }
                 else{
                     alert("Произошла ошибка");
                     // создать параграф "Счёт с таким именем уже существует"
                 }
             })
-
-            this.close();
+            
             
             this.title = '',
             this.currency = '',

@@ -43,7 +43,6 @@
             deleteWallet() {
             this.$store.dispatch('deleteWallet', this.walletId).then(response => {
                 if(response){
-                    // alert("Счёт успешно удалён");
                     // this.accountDeleted = true
                     setTimeout(() => {
                         this.close();

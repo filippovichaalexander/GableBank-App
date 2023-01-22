@@ -9,6 +9,7 @@ const store = createStore({
     token : false,
     refresh_token : false,
     wallets: false,
+    allCurrencies: false,
     lastTransactions: false
 
   },
@@ -163,7 +164,8 @@ const store = createStore({
     }
   },
   getters: {
-    wallet : state => id => state.wallets.find(wallet => Number(wallet.Id) == Number(id))
+    wallet : state => id => state.wallets.find(wallet => Number(wallet.Id) == Number(id)),
+    allCurrencies: state => state.allCurrencies
 }
 });
 
