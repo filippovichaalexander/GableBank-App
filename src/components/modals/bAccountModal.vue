@@ -18,6 +18,12 @@
                             <option value="BGN">BGN</option>
                             <option value="RON">RON</option>
                             <option value="ISK">ISK</option>
+                        </select> 
+                        <select name="cashback" id="cashback" class="modal__currency-sel" v-model="cashback">
+                            <option value="" disabled="disabled" selected="selected" class="select-header">Выберете категорию кэшбэка</option>
+                            <option value="Fastfood">Фастфуд</option>
+                            <option value="clothing">Одежда</option>
+                            <option value="sports">Спорт</option>
                         </select>              
                     </div>
                     <div class="modal__purpose">
@@ -69,6 +75,7 @@ export default {
             viewPurpose: false,
             title: '',
             currency: '',
+            cashback: '',
             purposeName: '',
             purposeAmount: '',
             purposeTime: ''
@@ -100,7 +107,8 @@ export default {
             // }
             let wallet = {
                 title : this.title,
-                currency : this.currency
+                currency : this.currency,
+                cashback : this.cashback
             };
             this.$store.dispatch('addWallet', wallet).then(response => {
                 if(response){
@@ -133,6 +141,7 @@ export default {
             
             this.title = '',
             this.currency = '',
+            this.cashback = '',
             this.purposeName = '',
             this.purposeAmount = '',
             this.purposeTime = ''

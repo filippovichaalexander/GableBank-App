@@ -1,84 +1,46 @@
 <template>
   <div class="last-operations">
-            <h2 class="last-operations-title">Последние операции</h2>
-            <div class="last-operations__content">
-              <h4 class="last-operations__date">Вчера</h4>
-              <div class="last-operations__item">
-                <div class="last-operations__left">
-                
-                <img src="./assets/oper.png" class="last-operations__item-img" alt="image"/>
-                <div class="last-operations__item-content">
-                  <p class="last-operations__recipient">Иванов А.А.</p>
-                  <div class="last-operations__item-state">
-                    <p class="last-operations__account">Домашний счёт</p>
-                    <p class="last-operations__cashback">Кэшбэк +<span>5</span></p>
-                  </div>
-                </div>
-                </div>
-                <div class="last-operations__item-right">
-                  <p class="last-operations__sent-amount">-25.00</p>
-                  <p class="last-operations__category">Фастфуд</p>
-                </div>
-              </div>
-              <div class="last-operations__item">
-                <div class="last-operations__left">
-                
-                <img src="./assets/oper.png" class="last-operations__item-img" alt="image"/>
-                <div class="last-operations__item-content">
-                  <p class="last-operations__recipient">Иванов А.А.</p>
-                  <div class="last-operations__item-state">
-                    <p class="last-operations__account">Домашний счёт</p>
-                    <p class="last-operations__cashback">Кэшбэк +<span>5</span></p>
-                  </div>
-                </div>
-                </div>
-                <div class="last-operations__item-right">
-                  <p class="last-operations__sent-amount">-25.00</p>
-                  <p class="last-operations__category">Фастфуд</p>
-                </div>
-              </div>
-              <div class="last-operations__item">
-                <div class="last-operations__left">
-                
-                <img src="./assets/oper.png" class="last-operations__item-img" alt="image"/>
-                <div class="last-operations__item-content">
-                  <p class="last-operations__recipient">Иванов А.А.</p>
-                  <div class="last-operations__item-state">
-                    <p class="last-operations__account">Домашний счёт</p>
-                    <p class="last-operations__cashback">Кэшбэк +<span>5</span></p>
-                  </div>
-                </div>
-                </div>
-                <div class="last-operations__item-right">
-                  <p class="last-operations__sent-amount">-25.00</p>
-                  <p class="last-operations__category">Фастфуд</p>
-                </div>
-              </div>
-              <div class="last-operations__item">
-                <div class="last-operations__left">
-                
-                <img src="./assets/oper.png" alt="image"/>
-                <div class="last-operations__item-content">
-                  <p class="last-operations__recipient">Петров А.А.</p>
-                  <div class="last-operations__item-state">
-                    <p class="last-operations__account">Домашний счёт</p>
-                    <p class="last-operations__cashback">Кэшбэк +<span>10</span></p>
-                  </div>
-                </div>
-                </div>
-                <div class="last-operations__item-right">
-                  <p class="last-operations__sent-amount">-15.00</p>
-                  <p class="last-operations__category">Транспорт</p>
-                </div>
-              </div>
-            </div>
-          
-          <button class="all-oper-btn" @click="toEventsView">Все операции</button>        
-          </div>
+  <h2 class="last-operations-title">Последние операции</h2>
+  <div class="last-operations__content">
+    <h4 class="last-operations__date">Вчера</h4>
+    <!-- <div class="last-operations__item">
+      <div class="last-operations__left">
+      <img src="./assets/oper.png" class="last-operations__item-img" alt="image"/>
+      <div class="last-operations__item-content">
+        <p class="last-operations__recipient">Иванов А.А.</p>
+        <div class="last-operations__item-state">
+          <p class="last-operations__account">Домашний счёт</p>
+          <p class="last-operations__cashback">Кэшбэк +<span>5</span></p>
+        </div>
+      </div>
+      </div>
+      <div class="last-operations__item-right">
+        <p class="last-operations__sent-amount">-25.00</p>
+        <p class="last-operations__category">Фастфуд</p>
+      </div>
+    </div> -->
+    <Suspence>
+      <template #default>
+        <Transaction />
+      </template>
+      <template #fallback>
+        <TransactionSkeleton />
+      </template>
+    </Suspence>
+  </div>
+  
+  <button class="all-oper-btn" @click="toEventsView">Все операции</button>        
+  </div>
 </template>
 
 <script>
+import Transaction from './Transaction.vue'
+import TransactionSkeleton from './TransactionSkeleton.vue'
 export default {
+  components: {
+    Transaction,
+    TransactionSkeleton
+  },
   methods: {
     toEventsView() {
       this.$router.push('/events');  

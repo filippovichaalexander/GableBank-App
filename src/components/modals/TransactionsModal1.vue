@@ -13,22 +13,22 @@
                     <option  v-for="wallet in wallets" :key="wallet.Id" :value="wallet.Id">{{wallet.Title}}</option>
                 </select>
                 <span v-if="wallet != 0">{{walletCurrency}}</span>
-                <input placeholder="Введите сумму" v-model="paymentAmount" />
+                <input type="number" placeholder="Введите сумму" v-model="paymentAmount" /> <span>{{ walletCurrency }}</span>
                 <div class="modal__currency">
-                    <input placeholder="Введите имя получателя" v-model="receiverFullName" />
-                    <input type="tel" placeholder="Введите номер телефона получателя" v-model="receiverPhoneNumber" />
+                    <input type="tel" placeholder="Введите номер телефона получателя" v-model="recipientPhone" />
                 </div>
                 <div class="modal__hint-wrapper">
-                    <p class="modal__hint-text">или выберете из списка</p>
+                    <p class="modal__hint-text">или выберете получателя из списка</p>
                     <img src="" alt="" class="modal__hint-img">
                 </div>
-                <select name="receiver" id="receiver" class="modal__receiver-sel" v-model="receiverBrandName">
+                <select name="receiver" id="receiver" class="modal__receiver-sel" v-model="recipientName(recipient.name)">
                     <option value="" disabled="disabled" selected="selected" class="select-header">Выберете получателя</option>
-                    <option value="USD">Burger King</option>
-                    <option value="RUB">Pizza 24</option>
-                    <option value="BGN">H&M</option>
-                    <option value="RON">Zara</option>
-                    <option value="ISK">New Yorker</option>
+                    <option value="Burger King" v-for="recipient in recipients" :key="recipient.name">Burger King</option>
+                    <option value="Pizza 24">Pizza 24</option>
+                    <option value="H&M">H&M</option>
+                    <option value="Zara">Zara</option>
+                    <option value="New Yorker">New Yorker</option>
+                    <option value="Decathlon">Decathlon</option>
                 </select>   
             </div>
         </div>
@@ -42,10 +42,9 @@ export default {
     data() {
         return {
             wallet: 0,
-            receiverFullName: '',
-            receiverPhoneNumber: '',
-            receiverBrandName: '',
-            paymentCathegory: '',
+            recipientPhone: '',
+            recipientName: '',
+            paymentCathegory: this.recipientCathegory,
             paymentAmount: '',
             paymentCashback: ''
         }
@@ -62,13 +61,16 @@ export default {
             if(this.wallet != 0){
                 return this.$store.getters.wallet(this.wallet).Currency;                
             }                    
+        },
+        recipients() {
+            return this.$store.state.recipients
+        },
+        recipientCathegory() {
+            return this.$store.getters.recipientCathegory(this.recipientName).Cathegory;
+        },
+        paymentCashback() {
+            this.paymentCashback = this.paymentAmount * 0.05 // в зависимости от категории определённый кэшбэк
         }
-        // walletCurrency() {  
-        //     if(walletTitle)  {
-        //         //находить валюту выбранного кошелька
-        //         return this.$store.state.wallets.find(wallet => wallet.Title === this.walletTitle).Title
-        //     }
-        // }         // можно найти в геттерах
     },
     methods: {
         close() {

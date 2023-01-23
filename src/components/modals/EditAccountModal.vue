@@ -90,7 +90,7 @@ export default {
   watсh: {
     //добавить стейт из computed в data
     wallet() {
-      this.title = this.walletTitle
+      this.title = this.walletTitle   // можно ли обратиться к wallet() ?
       this.currency = this.wallet.Currency;
     }
   }, 

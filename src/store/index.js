@@ -126,7 +126,7 @@ const store = createStore({
     return res.ok;
   },
   // create transaction
-  async getLastTansactions(context, data) {
+  async transact(context, data) {
     data = {
       ...data,
       auth : context.state.token
@@ -165,6 +165,9 @@ const store = createStore({
   },
   getters: {
     wallet : state => id => state.wallets.find(wallet => Number(wallet.Id) == Number(id)),
+
+    recipient : state => recipientName => state.recipients.find(recipient.Name === recipientName),
+    transactions: function() {this.wallet.transactions},
     allCurrencies: state => state.allCurrencies
 }
 });
