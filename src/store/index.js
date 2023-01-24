@@ -166,9 +166,9 @@ const store = createStore({
   getters: {
     wallet : state => id => state.wallets.find(wallet => Number(wallet.Id) == Number(id)),
 
-    recipient : state => recipientName => state.recipients.find(recipient.Name === recipientName),
-    transactions: function() {this.wallet.transactions},
-    allCurrencies: state => state.allCurrencies
+    // recipient : state => recipientName => state.recipients.find(recipient.Name === recipientName),
+    // transactions() {this.wallet.transactions},
+    // allCurrencies: state => state.allCurrencies
 }
 });
 

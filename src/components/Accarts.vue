@@ -90,7 +90,6 @@ export default {
   computed: {
     wallets() {                             
         if(this.$store.state.wallets) {
-        console.log('wallet')
         return this.$store.state.wallets
       }
     }

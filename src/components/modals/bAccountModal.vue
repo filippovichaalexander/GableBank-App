@@ -117,24 +117,25 @@ export default {
                     let regTitle = /[A-Za-z]{1,5}/          // || this.title.length >= 5
 
                     if (this.title.match(regTitle)
-
                     && 
-                    this.currency) {
+                    this.currency
+                    &&
+                    this.cashback) {
                         this.accountCreated = true
                         
                         setTimeout(() => {
                             this.methods.close();
                         }, 1000);
-                        showComplete();
                     } else if (this.title.match(!regTitle)) {
                         // display regezErrorTItile = true
                     } else if (this.currency === '') {
                         // display errorCurrency = true
+                    } else if (this.cashback === '') {
+                        // display errorCashback = true
                     }
                 }
                 else{
                     alert("Произошла ошибка");
-                    // создать параграф "Счёт с таким именем уже существует"
                 }
             })
             
