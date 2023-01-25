@@ -10,7 +10,42 @@ const store = createStore({
     refresh_token : false,
     wallets: false,
     allCurrencies: false,
-    lastTransactions: false
+    lastTransactions: false,
+
+    recipients: [
+      {
+        id: 1,
+        name : 'Burger King',
+        cashback: 'food'
+      },
+      {
+        id: 2,
+        name : 'H & M',
+        cashback: 'clothes'
+      },
+      {
+        id: 3,
+        name : 'Decathlon',
+        cashback: 'sport'
+      },
+      {
+        id: 4,
+        name : 'Pizza 24',
+        cashback: 'food'
+      },
+      {
+        id: 5,
+        name : 'Zara',
+        cashback: 'clothes'
+      },
+      {
+        id: 6,
+        name : 'Nike',
+        cashback: 'sport'
+      },
+    ],
+    cashback: ['food', 'clothes', 'sport'],
+    currencies: ['RUB', 'USD', 'BGN', 'MVR', 'TWD']
 
   },
   actions: {
@@ -111,7 +146,7 @@ const store = createStore({
       ...data,
       auth : context.state.token    
     };
-    const res = await fetch('https://money.aprograms.ru?class=Wallet&action=put', {
+    const res = await fetch('https://money.aprograms.ru?class=Wallet&action=change', {
       method: 'PUT',
       headers: {
         "Content-Type" : "appication/json;charset=utf-8"

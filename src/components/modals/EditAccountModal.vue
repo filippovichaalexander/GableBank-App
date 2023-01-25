@@ -64,7 +64,7 @@ export default {
   data() {
     return {
       viewPurpose: false,
-// перекинуть в шаблон
+      
       title: '',
       currency: ''
 
@@ -87,13 +87,10 @@ export default {
       return this.$store.getters.allCurrencies
     }
   },
-  watсh: {
-    //добавить стейт из computed в data
-    wallet() {
-      this.title = this.walletTitle   // можно ли обратиться к wallet() ?
-      this.currency = this.wallet.Currency;
-    }
-  }, 
+  updated(){
+    this.title = this.wallet.Title;
+    this.currency = this.wallet.Currency;
+  },
   methods: {
     close() {
       this.$emit('close');      
@@ -102,7 +99,12 @@ export default {
       this.viewPurpose = !this.viewPurpose;  
     },
     editWallet() {
-      this.$store.dispatch('editWallet', this.walletId).then(response => {
+      let wallet = {
+        id : this.walletId, 
+        title: this.title, 
+        currency : this.currency
+      };
+      this.$store.dispatch('editWallet', wallet).then(response => {
         if(response){
           alert('кошелёк изменён')
           setTimeout(() => {

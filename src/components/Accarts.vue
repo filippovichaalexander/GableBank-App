@@ -107,6 +107,7 @@ export default {
       this.activeWallet = Number(id);
     },
     editWallet(id) {
+      console.log(this.activeWallet);
       this.displayEditModal = true;
       this.activeWallet = Number(id);
     },

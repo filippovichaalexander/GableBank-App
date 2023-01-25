@@ -21,9 +21,9 @@
                         </select> 
                         <select name="cashback" id="cashback" class="modal__currency-sel" v-model="cashback">
                             <option value="" disabled="disabled" selected="selected" class="select-header">Выберете категорию кэшбэка</option>
-                            <option value="Fastfood">Фастфуд</option>
-                            <option value="clothing">Одежда</option>
-                            <option value="sports">Спорт</option>
+                            <option value="food" v-for=" cashbackItem in cashbackList" :key="cashbackItem">{{cashbackItem}}</option>
+                            <!-- <option value="clothes">Одежда</option>
+                            <option value="sport">Спорт</option> -->
                         </select>              
                     </div>
                     <div class="modal__purpose">
@@ -88,8 +88,14 @@ export default {
     computed: {
         walletTitle() {                         
             return this.$store.getters.wallet(this.walletId).Title;                
-        }
+        },
+        cashbackList() {
+            return this.$store.state.cashback
+        },
     },
+    // mounted() {
+
+    // },
     methods: {
         close() {
             this.$emit('close');      

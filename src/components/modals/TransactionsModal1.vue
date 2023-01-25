@@ -10,8 +10,9 @@
                     id="bankAccount" 
                     class="select-top" 
                     v-model="wallet">
+
                         <option value="" disabled="disabled" selected="selected" class="select-header">Выберете счёт</option>
-                        <option  v-for="wallet in wallets" :key="wallet.Id" :value="wallet.Id">{{wallet.Title}}</option>
+                        <option  v-for:="wallet in wallets" :key="wallet.Id" :value="wallet.Id">{{wallet.Title}}</option>
                     </select>
                     <p class="modal__currency-type">Валюта счёта - <span v-if="wallet != 0">{{walletCurrency}}</span></p>
                 </div>
@@ -37,15 +38,15 @@
                             <p class="receiver-name-text">или выберете получателя из списка</p>
                             <img src="" alt="" class="receiver-name-img">
                         </div>
-                        <!-- <select name="receiver" id="receiver" class="select-top" v-model="recipientName(recipient.name)">
+                        <select name="receiver" id="receiver" class="select-top" v-model="recipientId">
                             <option value="" disabled="disabled" selected="selected" class="select-header">Выберете получателя</option>
-                            <option value="Burger King" v-for="recipient in recipients" :key="recipient.name">Burger King</option>
-                            <option value="Pizza 24">Pizza 24</option>
+                            <option v-for="recipient in recipients" :key="recipient.name" :value="recipient.id">{{recipient.name}}</option>
+                            <!-- <option value="Pizza 24">Pizza 24</option>
                             <option value="H&M">H&M</option>
                             <option value="Zara">Zara</option>
                             <option value="New Yorker">New Yorker</option>
-                            <option value="Decathlon">Decathlon</option>
-                        </select>    -->
+                            <option value="Decathlon">Decathlon</option> -->
+                        </select>   
                     </div>
                 </div>
             </div>
@@ -95,7 +96,8 @@ export default {
             recipientName: '',
             paymentCathegory: this.recipientCathegory,
             paymentAmount: '',
-            paymentCashback: ''
+            paymentCashback: '',
+            recipientId : ''
         }
     },
     components: {
@@ -113,6 +115,9 @@ export default {
         },
         recipients() {
             return this.$store.state.recipients
+        },
+        currencies() {
+            return this.$store.state.currencies
         },
         recipientCathegory() {
             return this.$store.getters.recipientCathegory(this.recipientName).Cathegory;
