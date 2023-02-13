@@ -22,11 +22,6 @@ import Statistics from '../components/Statistics.vue'
 
 
 export default {
-  mounted(){
-    if(!this.$store.state.user) {
-      this.$router.push("signin");  // signin из name router. Если state.user пустой перекинь, router, когда отрисуешься (Можно created) в signin 
-    } // прелоадер лучше делать в роутере ?
-  },
   components: {
     Accarts,
     Paytrans,

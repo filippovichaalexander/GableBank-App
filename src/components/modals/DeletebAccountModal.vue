@@ -21,7 +21,8 @@
     export default {
         data() {
             return {
-                accountDeleted: false
+                accountDeleted: false,
+                savedTitle : ""
             }
         },
         props: {
@@ -32,8 +33,14 @@
             Modal
         },
         computed: {
-            walletTitle() {                         
-                return this.$store.getters.wallet(this.walletId).Title;                
+            walletTitle() {  
+                console.log(this.walletId);
+                if(this.walletId != 0){
+                    return this.$store.getters.wallet(this.walletId).Title;
+                }
+                else{
+                    return this.savedTitle;
+                }      
             }
         },
         methods: {
@@ -41,18 +48,20 @@
                 this.$emit('close')
             },
             deleteWallet() {
-            this.$store.dispatch('deleteWallet', this.walletId).then(response => {
-                if(response){
-                    // this.accountDeleted = true
-                    setTimeout(() => {
-                        this.close();
-                    }, 1000);
-                }
-                else{
-                    alert("Произошла ошибка");
-                }
-            })
-        },
+                this.savedTitle = this.walletTitle;
+                this.$store.dispatch('deleteWallet', this.walletId).then(response => {
+                    if(response){
+                        this.accountDeleted = true
+                        setTimeout(() => {
+                            this.close();
+                            this.accountDeleted = false;
+                        }, 1000);
+                    }
+                    else{
+                        alert("Произошла ошибка");
+                    }
+                })
+            },
     }
 }
   

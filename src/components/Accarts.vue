@@ -4,7 +4,6 @@
       <bAccountModal 
       :displayModal="displayModal" 
       @close="closeModal" 
-      :walletId="activeWallet"
       />
     </teleport>
     <teleport to="body">
@@ -79,7 +78,7 @@ export default {
       displayDeleteModal: false,
       displayEditModal: false,
       showBankAccountCreated: false,
-      activeWallet: false
+      activeWallet: 0
     }
   },
   components: {
@@ -103,13 +102,13 @@ export default {
       this.displayModal = true
     },
     deleteWallet(id) {
-      this.displayDeleteModal = true;
       this.activeWallet = Number(id);
+      this.displayDeleteModal = true;
     },
     editWallet(id) {
+      this.activeWallet = Number(id);
       console.log(this.activeWallet);
       this.displayEditModal = true;
-      this.activeWallet = Number(id);
     },
     closeModal() {
         this.displayModal = false

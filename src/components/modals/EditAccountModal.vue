@@ -10,13 +10,19 @@
             <div class="modal__currency">
               <input placeholder="Измените название счета" v-model="title" />
               <select name="currency" id="currency" class="modal__currency-sel" v-model="currency">
-                  <option value="" disabled="disabled" selected="selected" class="select-header">Измените валюту</option>
-                  <option value="USD" v-for="currency in allCurrencies" :key="currency">USD</option>
+                  <!-- <option value="" disabled="disabled" selected="selected" class="select-header">Измените валюту</option> -->
+                  <option 
+                  value="USD" 
+                  v-for="currency in allCurrencies" 
+                  :key="currency" 
+                  selected="{{wallet.Currency}}" 
+                  >USD</option>
+                   <!-- как сделать selected="{{wallet.Currency}}" через computed wallet  - выше -->
                   <option value="RUB">RUB</option>
                   <option value="BGN">BGN</option>
                   <option value="RON">RON</option>
                   <option value="ISK">ISK</option>
-              </select>              
+                </select>              
             </div>
             <div class="modal__purpose">
               <div class="modal__purpose-radio-wrapper">
@@ -74,6 +80,7 @@ export default {
     Modal
   },
   props: {
+    displayModal : Boolean,
     walletId : Number
   },
   computed: {

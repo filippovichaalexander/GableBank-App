@@ -19,14 +19,14 @@
         <p class="last-operations__category">Фастфуд</p>
       </div>
     </div> -->
-    <Suspence>
+    <Suspense>
       <template #default>
         <Transaction />
       </template>
       <template #fallback>
         <TransactionSkeleton />
       </template>
-    </Suspence>
+    </Suspense>
   </div>
   
   <button class="all-oper-btn" @click="toEventsView">Все операции</button>        

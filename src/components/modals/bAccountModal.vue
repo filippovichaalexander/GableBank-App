@@ -1,7 +1,7 @@
 <template>
     <Modal @close="this.close()" :displayModal="displayModal">
         <div v-if="accountCreated" class="account-created">
-            <h3>Счёт {{walletTitle}} успешно создан</h3>
+            <h3>Счёт {{title}} успешно создан</h3>
         </div>
         <div v-else class="modal__window-bottom">
             <div class="modal__header">
@@ -19,13 +19,8 @@
                             <option value="RON">RON</option>
                             <option value="ISK">ISK</option>
                         </select> 
-                        <select name="cashback" id="cashback" class="modal__currency-sel" v-model="cashback">
-                            <option value="" disabled="disabled" selected="selected" class="select-header">Выберете категорию кэшбэка</option>
-                            <option value="food" v-for=" cashbackItem in cashbackList" :key="cashbackItem">{{cashbackItem}}</option>
-                            <!-- <option value="clothes">Одежда</option>
-                            <option value="sport">Спорт</option> -->
-                        </select>              
                     </div>
+                    <SearchBar /> 
                     <div class="modal__purpose">
                         <div class="modal__purpose-radio-wrapper">
                             <div class="modal__purpose-left">
@@ -68,6 +63,7 @@
 
 <script>
 import Modal from "./Modal.vue";
+import SearchBar from '../SearchBar.vue'
 export default {
     data() {
         return {
@@ -82,16 +78,15 @@ export default {
         }
     },
     components : {
-        Modal
+        Modal,
+        SearchBar
     },
     props: ["displayModal"],
     computed: {
-        walletTitle() {                         
-            return this.$store.getters.wallet(this.walletId).Title;                
-        },
         cashbackList() {
             return this.$store.state.cashback
         },
+        
     },
     // mounted() {
 
@@ -116,22 +111,18 @@ export default {
                 currency : this.currency,
                 cashback : this.cashback
             };
+            let title = this.title;
             this.$store.dispatch('addWallet', wallet).then(response => {
                 if(response){
 
                     // alert("Счёт успешно добавлен");
-                    let regTitle = /[A-Za-z]{1,5}/          // || this.title.length >= 5
-
+                    let regTitle = /[A-Za-z]{1,5}/;      // || this.title.length >= 5
+                    console.log(title.match(regTitle), title);
                     if (this.title.match(regTitle)
                     && 
                     this.currency
                     &&
                     this.cashback) {
-                        this.accountCreated = true
-                        
-                        setTimeout(() => {
-                            this.methods.close();
-                        }, 1000);
                     } else if (this.title.match(!regTitle)) {
                         // display regezErrorTItile = true
                     } else if (this.currency === '') {
@@ -139,6 +130,11 @@ export default {
                     } else if (this.cashback === '') {
                         // display errorCashback = true
                     }
+                    this.accountCreated = true
+                    setTimeout(() => {
+                        this.close();
+                        this.accountCreated = false;
+                    }, 1000);
                 }
                 else{
                     alert("Произошла ошибка");
@@ -243,10 +239,10 @@ export default {
 .modal__purpose-radio-wrapper {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
 }
 .modal__purpose {
-    margin-bottom: 50px;
+    margin: 50px 0;
 }
 .modal__purpose-left h4 {
     /* text-align: center; */

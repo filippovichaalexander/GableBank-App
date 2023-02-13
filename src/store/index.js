@@ -4,46 +4,47 @@ const store = createStore({
 
   state: {
     preloader: true,
-
+    categories : false,
     user : false,
     token : false,
     refresh_token : false,
     wallets: false,
     allCurrencies: false,
     lastTransactions: false,
+    
 
-    recipients: [
-      {
-        id: 1,
-        name : 'Burger King',
-        cashback: 'food'
-      },
-      {
-        id: 2,
-        name : 'H & M',
-        cashback: 'clothes'
-      },
-      {
-        id: 3,
-        name : 'Decathlon',
-        cashback: 'sport'
-      },
-      {
-        id: 4,
-        name : 'Pizza 24',
-        cashback: 'food'
-      },
-      {
-        id: 5,
-        name : 'Zara',
-        cashback: 'clothes'
-      },
-      {
-        id: 6,
-        name : 'Nike',
-        cashback: 'sport'
-      },
-    ],
+    // recipients: [
+    //   {
+    //     id: 1,
+    //     name : 'Burger King',
+    //     cashback: 'food'
+    //   },
+    //   {
+    //     id: 2,
+    //     name : 'H & M',
+    //     cashback: 'clothes'
+    //   },
+    //   {
+    //     id: 3,
+    //     name : 'Decathlon',
+    //     cashback: 'sport'
+    //   },
+    //   {
+    //     id: 4,
+    //     name : 'Pizza 24',
+    //     cashback: 'food'
+    //   },
+    //   {
+    //     id: 5,
+    //     name : 'Zara',
+    //     cashback: 'clothes'
+    //   },
+    //   {
+    //     id: 6,
+    //     name : 'Nike',
+    //     cashback: 'sport'
+    //   },
+    // ],
     cashback: ['food', 'clothes', 'sport'],
     currencies: ['RUB', 'USD', 'BGN', 'MVR', 'TWD']
 
@@ -161,7 +162,7 @@ const store = createStore({
     return res.ok;
   },
   // create transaction
-  async transact(context, data) {
+  async income(context, data) {
     data = {
       ...data,
       auth : context.state.token
@@ -175,11 +176,20 @@ const store = createStore({
     })
     if (res.ok) { // 200
       let result = await res.json(); //  result это уже объект от сервера
-      console.log(result);
+      context.dispatch("transactIncome");
       context.dispatch("getWallets");
     }
     return res.ok;
-  }
+  },
+  async getCategories(context) {
+    const res = await fetch('https://money.aprograms.ru?class=Category&action=get')
+    if (res.ok) { // 200
+      let result = await res.json(); //  result это уже объект от сервера
+      context.commit("setCategories", result);
+    }
+    return res.ok;
+  },
+  
 },
   mutations: {
     setUser(state, data) {   // всегда принимают state  setUser меняет изначальное состояние state пробрасыват из fetch данные
@@ -196,13 +206,45 @@ const store = createStore({
     setWallets(state, data){
       state.wallets = data;
       console.log("Кошельки обновлены", state.wallets);
+    },
+    setCategories(state, data) {
+      state.categories = data
+    },
+    transactIncome(state, data) {
+      // на свой кошелёк закинуть новые данные - объект с категорией и сумму
+      // для этого сначала найти свой кошелек по walletId и в него добавить
+      // let searchedWallet = wallets.find(wallet=>wallet.Id === data.walletid).
+      // const {sumAmount, category, categoryAmount } = searchedWallet  //положить эти данные в существующий кошелёк
+      // или создать глобально вид кошелька те из чего он состоит,
+      // например: 
+      // const wallet = {
+        // currency: USD,
+        // totalWalletAmount: reduce (сумма всех категорий),
+        // Ещё в него должен добавиться ключ cashback
+        // categories: [
+        // categ1: {
+        // title: ЖКХ,
+        // amount: 100,
+        // },
+
+        // categ2: {
+        // title: FastFood,
+        // amount: 50,
+        // },
+        // 
+        // ],
+
+        // 
+        //}
+
+        // При создании кошелька нужно выбрать категорию кэшбэка и класть её в объект кошелька, 
+        // Как посмотреть как выглядит объект Кошелка на бэке ?
+        // ...при транзакции "Расход" учитывать кэшбэк (5% от суммы операции)
+
     }
   },
   getters: {
-    wallet : state => id => state.wallets.find(wallet => Number(wallet.Id) == Number(id)),
-
-    // recipient : state => recipientName => state.recipients.find(recipient.Name === recipientName),
-    // transactions() {this.wallet.transactions},
+    wallet : state => id => (state.wallets.find(wallet => Number(wallet.Id) == Number(id))) ? state.wallets.find(wallet => Number(wallet.Id) == Number(id)) : false,
     // allCurrencies: state => state.allCurrencies
 }
 });

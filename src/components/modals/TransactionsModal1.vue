@@ -6,48 +6,45 @@
         <div class="modal__content">
             <div class="modal__form">
                 <div class="top-wrapper">
-                    <select name="bankAccount" 
+                    <select 
+                    name="bankAccount" 
                     id="bankAccount" 
                     class="select-top" 
                     v-model="wallet">
-
-                        <option value="" disabled="disabled" selected="selected" class="select-header">Выберете счёт</option>
-                        <option  v-for:="wallet in wallets" :key="wallet.Id" :value="wallet.Id">{{wallet.Title}}</option>
+                        <!-- <option value="" disabled="disabled" selected="{{ wallet.Title }}" class="select-header">Выберете счёт</option> как сделать этот option - подсказку ?-->
+                        <option  
+                        v-for:="wallet in wallets" 
+                        :key="wallet.Id" 
+                        :value="wallet.Id"
+                        selected="{{walletTitle}}"
+                        >{{wallet.Title}}
+                        </option>
                     </select>
                     <p class="modal__currency-type">Валюта счёта - <span v-if="wallet != 0">{{walletCurrency}}</span></p>
+                    <!-- Создать просто геттер wallet -> и обращаться к нему wallet.Currency -->
                 </div>
                 <div class="amount-wrapper">
-                    <input type="text" placeholder="Введите сумму" v-model="paymentAmount" /> <span>{{ walletCurrency }}</span>
+                    <input type="text" placeholder="Введите сумму" v-model="transactionAmount" /> <span>{{ walletCurrency }}</span>
                 </div>
                 <div class="receiver-bottom">
-                    <div class="receiver__phone-number-wrapper">
+                <!--div class="receiver__phone-number-wrapper">
                         <div class="receiver__phone-number-label">
                             <label for="phone">Введите номер телефона получателя</label>
                         </div>
                         <div class="receiver__phone-number-input">
-                            <input 
-                            v-model="recipientPhone" 
-                            type="text" 
-                            name="" 
-                            id="phone"
-                            data-phone-pattern = "+7 (___) ___-__-__" />
+                            <input v-model="recipientPhone" type="text" id="phone" placeholder="(555) 555-5555" @input="input"/>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="receiver-name-wrapper">
-                        <div class="receiver-name-top-wrapper">
-                            <p class="receiver-name-text">или выберете получателя из списка</p>
-                            <img src="" alt="" class="receiver-name-img">
-                        </div>
-                        <select name="receiver" id="receiver" class="select-top" v-model="recipientId">
-                            <option value="" disabled="disabled" selected="selected" class="select-header">Выберете получателя</option>
-                            <option v-for="recipient in recipients" :key="recipient.name" :value="recipient.id">{{recipient.name}}</option>
-                            <!-- <option value="Pizza 24">Pizza 24</option>
-                            <option value="H&M">H&M</option>
-                            <option value="Zara">Zara</option>
-                            <option value="New Yorker">New Yorker</option>
-                            <option value="Decathlon">Decathlon</option> -->
-                        </select>   
+                        <SearchBar />
                     </div>
+                </div>
+                <div class="btns">
+                    <div class="btns-top">
+                        <button class="btn btn-top">Доход</button>
+                        <button class="btn btn-top">Расход</button>
+                    </div>
+                    <button class="btns-bottom btn">Перевести на другой счёт</button>
                 </div>
             </div>
         </div>
@@ -55,63 +52,45 @@
 </template>
 
 <script>
-// логику можно оставить для передачи денег с одного счёта на другой, сделать PUT,
 
-// маска телефона
-var eventCalllback = function (e) {
-    let el = e.target,
-        clearVal = el.dataset.phoneClear,
-        pattern = el.dataset.phonePattern,
-        matrix_def = "+7(___) ___-__-__",
-        matrix = pattern ? pattern : matrix_def,
-        i = 0,
-        def = matrix.replace(/\D/g, ""),
-        val = e.target.value.replace(/\D/g, "");
-    if (clearVal !== 'false' && e.type === 'blur') {
-        if (val.length < matrix.match(/([\_\d])/g).length) {
-            e.target.value = '';
-            return;
-        }
-    }
-    if (def.length >= val.length) val = def;
-    e.target.value = matrix.replace(/./g, function (a) {
-        return /[_\d]/.test(a) && i < val.length ? val.charAt(i++) : i >= val.length ? "" : a
-    });
-}
-var phone_inputs = document.querySelectorAll('[data-phone-pattern]');
-for (let elem of phone_inputs) {
-    for (let ev of ['input', 'blur', 'focus']) {
-        elem.addEventListener(ev, eventCalllback);
-    }
-}
-        
-// маска телефона
+
 
 import Modal from './Modal.vue'
+import SearchBar from '../SearchBar.vue'
 export default {
     data() {
         return {
             wallet: 0,
-            recipientPhone: '',
-            recipientName: '',
-            paymentCathegory: this.recipientCathegory,
-            paymentAmount: '',
-            paymentCashback: '',
-            recipientId : ''
+            walletCategory: '',
+            walletTitle: '',
+            transactionAmount: ''
+
         }
     },
     components: {
-        Modal
+        Modal,
+        SearchBar
     },
     props: ["displayModal"],
     computed: {
         wallets() {
             return this.$store.state.wallets
         },
-        walletCurrency() {     
-            if(this.wallet != 0){
-                return this.$store.getters.wallet(this.wallet).Currency;                
-            }                    
+        // walletCurrency() {     
+        //     if(this.wallet != 0){
+        //         return this.$store.getters.wallet(this.wallet).Currency;                
+        //     }                    
+        // },
+        walletTitle() {     
+                if(this.wallet != 0){
+                    return this.$store.getters.wallet(this.wallet).Title;                
+            }
+        },
+        wallet() {     
+                if(this.wallet != 0){
+                    return this.$store.getters.wallet(this.wallet);                
+            }  // вместо walletTitle и walletCurrency получить getter "Wallet" и при mounted или computed опрокидывать в шаблон
+            // В шаблоне wallet.Currency - не визуализируется...
         },
         recipients() {
             return this.$store.state.recipients
@@ -119,47 +98,57 @@ export default {
         currencies() {
             return this.$store.state.currencies
         },
-        recipientCathegory() {
-            return this.$store.getters.recipientCathegory(this.recipientName).Cathegory;
+        recipientCategory() {
+            return this.$store.getters.recipientCategory(this.recipientName).Category;
         },
-        paymentCashback() {
-            this.paymentCashback = this.paymentAmount * 0.05 // в зависимости от категории определённый кэшбэк
-        }
+        // paymentCashback() {
+        //     return this.paymentAmount * 0.05 // в зависимости от категории определённый кэшбэк
+        // }
     },
     methods: {
+        // маска телефона
+        input(e) {
+            var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+            e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+        },
+        // маска телефона
         close() {
             this.$emit('close');
             this.walletTitle = '';    
         },
-        proceedPayment(event) {
+        income(event) {
             event.preventDefault();
 
-            let payment = {
-                wallet : this.wallet,
-                receiverFullName : this.receiverFullName,
-                receiverPhoneNumber : this.receiverPhoneNumber,
-                receiverBrandName : this.receiverBrandName,
-                paymentCathegory : this.paymentCathegory,
-                paymentAmount : this.paymentAmount,
-                paymentCashback : this.paymentCashback,
-            };
+            // regex transactionAmount
+            let regAmount = /^\d+$/;      
+                if (this.transactionAmount.match(regAmount)) {
+                    console.log('сумма верна')
+                }
+                // или так:
+                // let regAmount = Number(transactionAmount); 138 строка
 
-        this.$store.dispatch('transact', payment).then(response => {
+                // regex transactionAmount
+                // в которые строки кодв=а вставит этот regex ?
+
+            let walletData = {
+                walletCategory : this.walletCategory,  // категорию можно выбрать, следовательно её нужно передавать ?
+                walletTitle : this.walletTitle,  // Имя кошелька не нужно передавать тк он не изменяется ?
+                walletCurrency : this.walletCurrency,  // валюту не нужно передавать тк она не изменяется ?
+                transactionAmount: this.transactionAmount
+                // transactionAmount: this.Number(transactionAmount);
+            };
+            this.$store.dispatch('income', walletData).then(response => {
             if(response){
-                alert("Покупка успешно оплачена");
+                alert("Операция прощла успешно");
                 // создать параграф "Счёт успешно добавлен" в компоненте Accards
             }
             else{
                 alert("Произошла ошибка");
                 // создать параграф "Счёт с таким именем уже существует"
-            }
-        })
-        this.wallet = '',
-        this.receiverFullName = '',
-        this.receiverPhoneNumber = '',
-        this.receiverBrandName = '',
-        this.paymentCathegory = '',
-        this.paymentAmount = ''
+                }
+            })
+            // Чистить поле ввода
+            this.transactionAmount = ''
         }
     }
 }
@@ -218,6 +207,7 @@ export default {
     .modal__header,
     .modal__content {
         margin: 0 auto;
+        width: 42%;
     }
     .modal__header {
         max-width: 65%;
@@ -345,8 +335,8 @@ export default {
         padding: 30px 10px;
     }
     .amount-wrapper {
-        padding: 30px 10px;
-        text-align: center;
+        padding: 30px 0;
+        text-align: left;
     }
     .receiver__phone-number-wrapper {
         text-align: center;
@@ -363,10 +353,14 @@ export default {
         justify-content: center;
         gap: 30px;
         align-items: center;
+
+        position: relative;
     }
     .receiver__phone-number-wrapper,
     .receiver-name-wrapper {
-        width: 30%;
+        /* width: 30%; */
+        position: absolute;
+        left: 0;
     }
 
     /* Translation */
@@ -382,6 +376,35 @@ export default {
     .purpose-enter-active,
     .purpose-leave-active {
     transition: all 1s ease;
+    }
+    .btns {
+        
+        margin: 50px auto 0 auto;
+        text-align: center;
+        width: 300px;
+    }
+    .btns-top {
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 30px;
+    }
+    .btns-bottom {
+        margin-top: 30px;
+    text-align: center;
+        width: 100%;
+    }
+    .btn {
+        padding: 10px;
+        background-color: plum;
+    }
+    .btn-top {
+        width: 40%;
+    }
+    .btn-else {
+        padding: 10px;
+        background-color: plum;
     }
 </style>
 
