@@ -115,9 +115,8 @@ export default {
             this.$store.dispatch('addWallet', wallet).then(response => {
                 if(response){
 
-                    // alert("Счёт успешно добавлен");
                     let regTitle = /[A-Za-z]{1,5}/;      // || this.title.length >= 5
-                    console.log(title.match(regTitle), title);
+                    // console.log(title.match(regTitle), title);
                     if (this.title.match(regTitle)
                     && 
                     this.currency

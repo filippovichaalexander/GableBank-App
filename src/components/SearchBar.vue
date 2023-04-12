@@ -9,10 +9,12 @@
     v-model="input" 
     placeholder="Create or find category" 
     @focus="isVisible = true"
+    @blur="isVisible = false"
+    @change="$emit('change', selectedItem.Id)"
     />
     <div class="search-bar-options" v-if="isVisible" >
-      <div v-for="category in filteredUser" :key="category.Id" class="search-bar-option" @click="selectCategory(category)" > 
-        <p  class="pointer category">
+      <div v-for="category in filteredUser" :key="category.Id" class="search-bar-option" > 
+        <p  class="pointer category" @click="selectCategory(category)">
           {{ category.Title }}
         </p>
       </div>
@@ -27,7 +29,6 @@
 export default {
   data() {
     return {
-      // categoriesStatic: ["car", "bus", "moto", "bike"],
       input: "",
       selectedItem: null,
       isVisible: false,
@@ -61,8 +62,9 @@ export default {
   },
   methods: {
     selectCategory(category) {
-      console.log(category);
+      this.selectedItem = category;
       this.input = category.Title;
+      console.log(this.input);
       this.isVisible = false;
     },
     hideList() {

@@ -17,11 +17,11 @@ import Preloader from './components/Preloader.vue';
 
 export default {
   name: 'App',
-  data() {
-    return {
-      // displayPreloader: this.$store.state.preloader
-    }
-  },
+  // data() {
+  //   return {
+  //     // displayPreloader: this.$store.state.preloader
+  //   }
+  // },
   components: {
     Header,
     Preloader
@@ -29,7 +29,6 @@ export default {
   mounted() {   
     setTimeout(() => {
       this.$store.state.preloader = false;
-      console.log(this.$store.state.preloader);
       }, 3000) 
   },
   beforeCreate(){

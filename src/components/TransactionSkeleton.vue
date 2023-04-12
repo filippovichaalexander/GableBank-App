@@ -41,17 +41,20 @@ export default {
 }
 .last-operations__account,
 .last-operations__sent-amount {
+  background-color: grey;
   margin-bottom: 10px;
   text-align: right;  
   width: 100%;
 }
 .last-operations__recipient {
+  background-color: grey;
   width: 100%;
 }
 .last-operations__category {
   width: 100%;
 }
 .last-operations__cashback {
+  background-color: grey;
   width: 100%;
 }
 .all-oper-btn {

@@ -1,51 +1,22 @@
 import { createStore } from "vuex";
 
+import wallets from "./modules/wallets";
+import categories from "./modules/categories";
+import user from "./modules/user";
+
 const store = createStore({
 
   state: {
     preloader: true,
-    categories : false,
+    // categories : false,
+    transactedCategories: false,
     user : false,
     token : false,
     refresh_token : false,
-    wallets: false,
-    allCurrencies: false,
+    // wallets: false,
+    allCurrencies: false, transactions: [],
     lastTransactions: false,
     
-
-    // recipients: [
-    //   {
-    //     id: 1,
-    //     name : 'Burger King',
-    //     cashback: 'food'
-    //   },
-    //   {
-    //     id: 2,
-    //     name : 'H & M',
-    //     cashback: 'clothes'
-    //   },
-    //   {
-    //     id: 3,
-    //     name : 'Decathlon',
-    //     cashback: 'sport'
-    //   },
-    //   {
-    //     id: 4,
-    //     name : 'Pizza 24',
-    //     cashback: 'food'
-    //   },
-    //   {
-    //     id: 5,
-    //     name : 'Zara',
-    //     cashback: 'clothes'
-    //   },
-    //   {
-    //     id: 6,
-    //     name : 'Nike',
-    //     cashback: 'sport'
-    //   },
-    // ],
-    cashback: ['food', 'clothes', 'sport'],
     currencies: ['RUB', 'USD', 'BGN', 'MVR', 'TWD']
 
   },
@@ -78,7 +49,6 @@ const store = createStore({
     })
     if (res.ok) { // 200
       let result = await res.json(); //  result это уже объект от сервера
-      console.log(result);
       context.commit("setUser", result);
     }
     return res.ok;
@@ -98,7 +68,6 @@ const store = createStore({
     })
     if (res.ok) { // 200
       let result = await res.json(); //  result это уже объект от сервера
-      console.log(result);
       context.dispatch("getWallets");
     }
     return res.ok;
@@ -114,7 +83,6 @@ const store = createStore({
     })
     if (res.ok) { // 200
       let result = await res.json(); //  result это уже объект от сервера
-      console.log(result);
       context.commit("setWallets", result);
     }
     return res.ok;
@@ -132,8 +100,8 @@ const store = createStore({
       body: JSON.stringify(data)
     })
     if (res.ok) { // 200
-      let result = await res.json(); //  result это уже объект от сервера
-      console.log(result);                   // приходит 1 - можно не писать
+      let result = await res.json(); //  result - объект от сервера
+      // console.log(result);                   // приходит 1 - можно не писать
 
       // const newWallets = this.wallets.filter(wallet => wallet.id !== id)
       // this.wallets = newWallets;
@@ -156,18 +124,17 @@ const store = createStore({
     })
     if (res.ok) { // 200
       let result = await res.json(); //  result это уже объект от сервера
-      console.log(result);
       context.dispatch("getWallets");
     }
     return res.ok;
   },
   // create transaction
-  async income(context, data) {
+  async add_transaction(context, data) {
     data = {
       ...data,
-      auth : context.state.token
+      auth : context.getters.token
     };
-    const res = await fetch('https://money.aprograms.ru?class=Wallet&action=add', {
+    const res = await fetch('https://money.aprograms.ru?class=Transaction&action=add', {
       method: 'POST',
       headers: {
         "Content-Type" : "appication/json;charset=utf-8"
@@ -176,19 +143,24 @@ const store = createStore({
     })
     if (res.ok) { // 200
       let result = await res.json(); //  result это уже объект от сервера
-      context.dispatch("transactIncome");
       context.dispatch("getWallets");
     }
     return res.ok;
   },
-  async getCategories(context) {
-    const res = await fetch('https://money.aprograms.ru?class=Category&action=get')
-    if (res.ok) { // 200
-      let result = await res.json(); //  result это уже объект от сервера
-      context.commit("setCategories", result);
-    }
-    return res.ok;
-  },
+  async getTransactions(context) {
+    const res = await fetch('https://money.aprograms.ru?class=Wallet&action=get_all', {
+    method: 'POST',
+    headers: {
+      "Content-Type" : "appication/json;charset=utf-8"
+    },  
+    body: JSON.stringify({auth:context.state.token})
+  })
+  if (res.ok) { // 200
+    let result = await res.json(); //  result это уже объект от сервера
+    context.commit("setTransactions", result); 
+  }
+  return res.ok;
+}
   
 },
   mutations: {
@@ -196,7 +168,6 @@ const store = createStore({
       state.user = data.user;
       state.token = data.Access_token;
       state.refresh_token = data.Refresh_token;  //rtok - используется для получения token
-      console.log("Авторизация прошла успешно");
     },
 
     // createNewBankAccount(state, newBankAccount) {
@@ -205,48 +176,21 @@ const store = createStore({
     // },
     setWallets(state, data){
       state.wallets = data;
-      console.log("Кошельки обновлены", state.wallets);
     },
-    setCategories(state, data) {
-      state.categories = data
-    },
-    transactIncome(state, data) {
-      // на свой кошелёк закинуть новые данные - объект с категорией и сумму
-      // для этого сначала найти свой кошелек по walletId и в него добавить
-      // let searchedWallet = wallets.find(wallet=>wallet.Id === data.walletid).
-      // const {sumAmount, category, categoryAmount } = searchedWallet  //положить эти данные в существующий кошелёк
-      // или создать глобально вид кошелька те из чего он состоит,
-      // например: 
-      // const wallet = {
-        // currency: USD,
-        // totalWalletAmount: reduce (сумма всех категорий),
-        // Ещё в него должен добавиться ключ cashback
-        // categories: [
-        // categ1: {
-        // title: ЖКХ,
-        // amount: 100,
-        // },
-
-        // categ2: {
-        // title: FastFood,
-        // amount: 50,
-        // },
-        // 
-        // ],
-
-        // 
-        //}
-
-        // При создании кошелька нужно выбрать категорию кэшбэка и класть её в объект кошелька, 
-        // Как посмотреть как выглядит объект Кошелка на бэке ?
-        // ...при транзакции "Расход" учитывать кэшбэк (5% от суммы операции)
-
+    // setCategories(state, data) {
+    //   state.categories = data
+    // },
+    setTransactions(state, data) {
+      state.transactedCategories = data
     }
   },
   getters: {
-    wallet : state => id => (state.wallets.find(wallet => Number(wallet.Id) == Number(id))) ? state.wallets.find(wallet => Number(wallet.Id) == Number(id)) : false,
-    // allCurrencies: state => state.allCurrencies
-}
+    wallet : state => id => 
+    (state.wallets.find(wallet => Number(wallet.Id) == Number(id))) 
+    ? state.wallets.find(wallet => Number(wallet.Id) == Number(id)) : false,
+    token : state => state.token
+  },
+  modules : [wallets, categories, user]
 });
 
 export default store;

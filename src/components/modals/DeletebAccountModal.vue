@@ -34,7 +34,6 @@
         },
         computed: {
             walletTitle() {  
-                console.log(this.walletId);
                 if(this.walletId != 0){
                     return this.$store.getters.wallet(this.walletId).Title;
                 }

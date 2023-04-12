@@ -10,21 +10,47 @@
                     name="bankAccount" 
                     id="bankAccount" 
                     class="select-top" 
-                    v-model="wallet">
-                        <!-- <option value="" disabled="disabled" selected="{{ wallet.Title }}" class="select-header">Выберете счёт</option> как сделать этот option - подсказку ?-->
-                        <option  
-                        v-for:="wallet in wallets" 
-                        :key="wallet.Id" 
-                        :value="wallet.Id"
-                        selected="{{walletTitle}}"
-                        >{{wallet.Title}}
+                    v-model="walletId">
+                    <option value="0" selected disabled>Выберите кошелёк</option>
+                    <option  
+                    v-for:="w in wallets" 
+                    :key="w.Id" 
+                    :value="w.Id"
+                        >{{w.Title}}
                         </option>
                     </select>
-                    <p class="modal__currency-type">Валюта счёта - <span v-if="wallet != 0">{{walletCurrency}}</span></p>
-                    <!-- Создать просто геттер wallet -> и обращаться к нему wallet.Currency -->
+                </div>
+                <div class="choose-transaction">
+                    <div class="choose-transaction__item">
+                        <input 
+                        type="radio" 
+                        id="add_transaction" 
+                        name="transfer" 
+                        value="1"
+                        v-model="type">
+                        <label for="add_transaction">Доход</label>
+                    </div>
+                    <div class="choose-transaction__item">
+                        <input 
+                        type="radio" 
+                        id="outcome" 
+                        name="transfer" 
+                        value="0"
+                        v-model="type">
+                        <label for="outcome">Расход</label>
+                    </div>
+                    <div class="choose-transaction__item">
+                        <input 
+                        type="radio" 
+                        id="transfer" 
+                        name="transfer" 
+                        value="2" 
+                        v-model="type">
+                        <label for="transfer">Перевести</label>
+                    </div>
                 </div>
                 <div class="amount-wrapper">
-                    <input type="text" placeholder="Введите сумму" v-model="transactionAmount" /> <span>{{ walletCurrency }}</span>
+                    <input type="text" placeholder="Введите сумму" v-model="total" /> <span v-if="walletId != 0">{{ wallet.Currency }}</span>
                 </div>
                 <div class="receiver-bottom">
                 <!--div class="receiver__phone-number-wrapper">
@@ -36,15 +62,39 @@
                         </div>
                     </div> -->
                     <div class="receiver-name-wrapper">
-                        <SearchBar />
+                        <!-- Сделать выпадающий список с категориями, привязать с помощью v-model -->
+                        <!-- И попробовать отправить запрос -->
+                        <!-- <SearchBar v-model="category" @change="log"/> -->
+                        <div 
+                        сlass="search-bar" 
+                        :style="{'position' : (isVisible) ? 'absolute' : 'fixed'}" 
+                        @сlick.self="hideList"
+                        >
+                            <input 
+                            type="text" 
+                            v-model="inputSearchCat"
+                            placeholder="Create or find category" 
+                            @focus="isVisible = true"
+                            />
+                            <div class="search-bar-options" v-if="isVisible" >
+                                <div v-for="category in categories" :key="category.Id" class="search-bar-option" @click="selectCategory(category)" > 
+                                    <p  class="pointer category">
+                                    {{ category.Title }}
+                                    </p>
+                                </div>
+                                <div v-if="categories.length === 0">
+                                    <p>No results found!</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="btns">
-                    <div class="btns-top">
+                    <!-- <div class="btns-top">
                         <button class="btn btn-top">Доход</button>
                         <button class="btn btn-top">Расход</button>
-                    </div>
-                    <button class="btns-bottom btn">Перевести на другой счёт</button>
+                    </div> -->
+                    <button class="btns-bottom btn" @click.prevent="add_transaction()">Выполнить транзакцию</button>
                 </div>
             </div>
         </div>
@@ -60,11 +110,16 @@ import SearchBar from '../SearchBar.vue'
 export default {
     data() {
         return {
-            wallet: 0,
+            walletId: 0,
             walletCategory: '',
-            walletTitle: '',
-            transactionAmount: ''
+            type: '0',
+            total: '',
+            inputSearchCat: '',
+            category: false,
+            isVisible: false,
 
+            categoryTitle,
+            categoryType
         }
     },
     components: {
@@ -76,21 +131,10 @@ export default {
         wallets() {
             return this.$store.state.wallets
         },
-        // walletCurrency() {     
-        //     if(this.wallet != 0){
-        //         return this.$store.getters.wallet(this.wallet).Currency;                
-        //     }                    
-        // },
-        walletTitle() {     
-                if(this.wallet != 0){
-                    return this.$store.getters.wallet(this.wallet).Title;                
-            }
-        },
-        wallet() {     
-                if(this.wallet != 0){
-                    return this.$store.getters.wallet(this.wallet);                
-            }  // вместо walletTitle и walletCurrency получить getter "Wallet" и при mounted или computed опрокидывать в шаблон
-            // В шаблоне wallet.Currency - не визуализируется...
+        wallet() {  
+            if(this.walletId != 0){
+                return this.$store.getters.wallet(this.walletId);                
+            }  
         },
         recipients() {
             return this.$store.state.recipients
@@ -101,59 +145,89 @@ export default {
         recipientCategory() {
             return this.$store.getters.recipientCategory(this.recipientName).Category;
         },
-        // paymentCashback() {
-        //     return this.paymentAmount * 0.05 // в зависимости от категории определённый кэшбэк
-        // }
+        // searchbar
+        categories(){
+            return this.$store.getters.categories.filter(category => category.Title.includes(this.inputSearchCat));
+        },
     },
     methods: {
-        // маска телефона
-        input(e) {
-            var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
-            e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
-        },
-        // маска телефона
+        // phone number mask
+        // input(e) {
+        //     var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+        //     e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+        // },
+        // phone number mask
+
         close() {
             this.$emit('close');
             this.walletTitle = '';    
         },
-        income(event) {
-            event.preventDefault();
+        add_transaction() {
 
-            // regex transactionAmount
-            let regAmount = /^\d+$/;      
-                if (this.transactionAmount.match(regAmount)) {
-                    console.log('сумма верна')
+            // let regAmount = /^\d+$/;      
+            //     if (this.transactionAmount.match(regAmount)) {
+            //         console.log('сумма верна')
+            //     }
+            if(this.category){
+                let walletData = {
+                    wallet_id : this.walletId,   // слева ключи должны быть идентичны бэку
+                    type : this.type, 
+                    total : this.total,  
+                    category: this.category
+                };
+                this.$store.dispatch('add_transaction', walletData).then(response => {
+                if(response){
+                    console.log(walletData)
                 }
-                // или так:
-                // let regAmount = Number(transactionAmount); 138 строка
-
-                // regex transactionAmount
-                // в которые строки кодв=а вставит этот regex ?
-
-            let walletData = {
-                walletCategory : this.walletCategory,  // категорию можно выбрать, следовательно её нужно передавать ?
-                walletTitle : this.walletTitle,  // Имя кошелька не нужно передавать тк он не изменяется ?
-                walletCurrency : this.walletCurrency,  // валюту не нужно передавать тк она не изменяется ?
-                transactionAmount: this.transactionAmount
-                // transactionAmount: this.Number(transactionAmount);
-            };
-            this.$store.dispatch('income', walletData).then(response => {
-            if(response){
-                alert("Операция прощла успешно");
-                // создать параграф "Счёт успешно добавлен" в компоненте Accards
+                else{
+                    alert("Произошла ошибка");
+                    }
+                })
+                this.close()
             }
             else{
-                alert("Произошла ошибка");
-                // создать параграф "Счёт с таким именем уже существует"
-                }
-            })
-            // Чистить поле ввода
-            this.transactionAmount = ''
+                // Здесь нужно вызвать запрос на добавление категории. 
+                // Назване - inputSearchCat
+                // Тип тоже в дате
+                // После вызова данного запроса необходимо каким-то путем получить id новой категории (взять id последнего объекта из getters.categories или другой вариант)
+                // И уже выполнить добавление транзакции
+                
+                this.$store.dispatch('addCategory', categoryData)
+                    let lastCategoryId = this.$store.getters.categories.length - 1
+
+                    let categoryData = {
+                        category_id : lastCategoryId.id,   // слева ключи должны быть идентичны бэку
+                        categoryTitle : this.categoryTitle, 
+                        categoryTYpe : this.categoryType
+                    };
+                    this.$store.dispatch('add_transaction', categoryData).then(response => {
+                    if(response){
+                        console.log(categoryData)
+                    }
+                    else{
+                        alert("Произошла ошибка");
+                    }
+                })
+                this.close()
+            }
+        },
+        // searbar
+        selectCategory(category) {
+            this.category = category.Id;
+            this.inputSearchCat = category.Title;
+            this.isVisible = false;
+        },
+        hideList() {
+            this.isVisible = false;
+        }
+    },
+    mounted(){
+        if(!this.$store.getters.categories){
+            this.$store.dispatch("getCategories");
         }
     }
 }
 
-// как валидировать пропсы ?
 </script>
 
 <style scoped>
@@ -213,8 +287,6 @@ export default {
         max-width: 65%;
     }
     .modal__title {
-        /* display: inline-block; */
-        /* margin: 0 auto; */
         text-align: center;
         font-size: 25px;
     }
@@ -232,6 +304,9 @@ export default {
         height: 75px;
         width: 40%;
         text-align: center;
+    }
+    .select-top {
+        margin: 30px 0;
     }
     .select-top option {
         text-align: left;
@@ -252,7 +327,6 @@ export default {
         align-items: center;
     }
     .modal__purpose-left h4 {
-        /* text-align: center; */
         margin: 0 0 10px 0;
         font-size: 20px;
     }
@@ -341,10 +415,6 @@ export default {
     .receiver__phone-number-wrapper {
         text-align: center;
     }
-    /* .receiver__phone-number-label,
-    .receiver__phone-number-input {
-        padding: 10px 20px;
-    } */
     .receiver__phone-number-label {
         text-align: left;
     }
@@ -406,6 +476,47 @@ export default {
         padding: 10px;
         background-color: plum;
     }
+    .choose-transaction
+     {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .choose-transaction__item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    /* SearchBar */
+    .pointer {
+  cursor: pointer;
+}
+.show {
+  visibility: show;
+}
+.hide {
+  visibility: hidden;
+}
+
+.search-bar-options{
+  position : absolute;
+  background-color: white;
+  display:flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  width: 220px;
+  max-height: 300px;
+  overflow-y:scroll;
+  padding: 5px;
+}
+.search-bar-option{
+  width: 175px;
+  text-align: left;
+  box-shadow: 0 0 5px black;
+  border-radius: 5px;
+  padding: 5px;
+}
 </style>
 
 

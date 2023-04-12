@@ -1,5 +1,6 @@
 <template>
-  <div class="statistics">
+  <!-- в обертку компоненты - v-if="walletId != 0"  ???? -->
+  <div class="statistics">  
             <h2 class="statistics__title">Статистика за <span>Ноябрь</span></h2>
             <div class="statistics__content">
               <div class="statistics__left">
@@ -13,12 +14,14 @@
                   @click="setStatsIncome"
                   >Поступления</button>
                 </div>
-                <div class="statistics__exps" v-if="stats === 'exps'">
-                  <p class="statistics__item statistics__item--exps">Переводы&nbsp;<span>50,55</span><span class="statistics--currency">$</span></p>
-                  <p class="statistics__item statistics__item--exps">Турагенства&nbsp;<span>54,55</span><span class="statistics--currency">$</span></p>
-                  <p class="statistics__item statistics__item--exps">Фастфуд&nbsp;<span>50,55</span><span class="statistics--currency">$</span></p>
-                  <p class="statistics__item statistics__item--exps">Супермаркеты&nbsp;<span>50,55</span><span class="statistics--currency">$</span></p>
-                  <p class="statistics__item statistics__item--exps">Топливо&nbsp;<span>30,55</span><span class="statistics--currency">$</span></p>
+                <div v-if="stats === 'exps'">
+                  <div class="statistics__exps"  v-for="transactedCategory in transactedCategoriesIncome" :key="transactedCategory.id">
+                    <p class="statistics__item statistics__item--exps">{{transactedCategory.name}}&nbsp;<span>{{transactedCategory.total}}</span><span class="statistics--currency">{{wallet.currency}}</span></p>
+                    <p class="statistics__item statistics__item--exps">Турагенства&nbsp;<span>54,55</span><span class="statistics--currency">$</span></p>
+                    <p class="statistics__item statistics__item--exps">Фастфуд&nbsp;<span>50,55</span><span class="statistics--currency">$</span></p>
+                    <p class="statistics__item statistics__item--exps">Супермаркеты&nbsp;<span>50,55</span><span class="statistics--currency">$</span></p>
+                    <p class="statistics__item statistics__item--exps">Топливо&nbsp;<span>30,55</span><span class="statistics--currency">$</span></p>
+                  </div>
                 </div>
                 <div class="statistics__income" v-else>
                   <p class="statistics__item statistics__item--income">Рестораны&nbsp;<span>50,55</span><span class="statistics--currency">$</span></p>
@@ -28,6 +31,7 @@
                   <p class="statistics__item statistics__item--income">Топливо&nbsp;<span>30,55</span><span class="statistics--currency">$</span></p>
                 </div>
               </div>
+              
               <div class="statistics__right">
                 <svg class="chart" width="300" height="300" viewBox="0 0 50 50">
                   <circle class="unit" r="15.9" cx="50%" cy="50%"></circle>
@@ -49,8 +53,22 @@ export default {
     data() {
         return {
             stats: 'exps', //обязательно ли здесь принимать только строку ?
-            btnColor: true   
+            btnColor: true,  
+            // walletId: 0,
         }
+    },
+    computed: {
+      transactedCategoriesIncome() {   // только те категории у которых поле income 
+        if(this.$store.state.transactedCategories.income === 1) {
+          return this.$store.state.transactedCategories
+        //  this.$store.state.transactedCategories.filter(cat => cat.income)
+        }
+      },
+      wallet() {     // как взять wallet в котором я нахожусь ?
+        if(this.walletId != 0){
+            return this.$store.getters.wallet(this.walletId);                
+        }  
+      },
     },
     methods: {
         setStatsExps() {

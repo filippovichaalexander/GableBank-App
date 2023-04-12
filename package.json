@@ -6,6 +6,7 @@
     "build": "vite build"
   },
   "dependencies": {
+    "three": "^0.150.1",
     "vue": "^3.0.4",
     "vue-router": "^4.1.6",
     "vuex": "^4.0.2"
