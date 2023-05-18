@@ -5,15 +5,15 @@
       </teleport>
       <h2 class="paytrans__title">Платежи и переводы</h2>
       <div class="paytrans__content">
-          <div class="paytrans__item">
-            <p class="paytrans__item-title">По реквизитам</p>
-          </div>
-          <div class="paytrans__item">
-            <p class="paytrans__item-title">Запрос денег</p>
-          </div>
-          <div class="paytrans__item" @click="showTransactionModal">
-            <p class="paytrans__item-title">Перевести деньги</p>
-          </div>
+        <div class="paytrans__item">
+          <p class="paytrans__item-title">По реквизитам</p>
+        </div>
+        <div class="paytrans__item">
+          <p class="paytrans__item-title">Запрос денег</p>
+        </div>
+        <div class="paytrans__item" @click="showTransactionModal">
+          <p class="paytrans__item-title">Перевести деньги</p>
+        </div>
       </div>
   </div>
 </template>

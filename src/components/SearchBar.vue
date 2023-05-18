@@ -44,10 +44,10 @@ export default {
   },
   computed: {
     categories(){
-      if(!this.$store.state.categories){
+      if(!this.$store.getters.categories){
         this.$store.dispatch("getCategories");
       }
-      return this.$store.state.categories;
+      return this.$store.getters.categories;
     },
     filteredUser() {
       const query = this.input.toLowerCase();
@@ -64,7 +64,6 @@ export default {
     selectCategory(category) {
       this.selectedItem = category;
       this.input = category.Title;
-      console.log(this.input);
       this.isVisible = false;
     },
     hideList() {

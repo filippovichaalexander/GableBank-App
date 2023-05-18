@@ -87,9 +87,9 @@ export default {
     EditAccountModal
   },
   computed: {
-    wallets() {                             
-        if(this.$store.state.wallets) {
-        return this.$store.state.wallets
+    wallets() {                       
+        if(this.$store.getters.wallets) {
+        return this.$store.getters.wallets
       }
     }
   },

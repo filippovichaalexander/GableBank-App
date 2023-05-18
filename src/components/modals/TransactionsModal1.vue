@@ -116,10 +116,7 @@ export default {
             total: '',
             inputSearchCat: '',
             category: false,
-            isVisible: false,
-
-            categoryTitle,
-            categoryType
+            isVisible: false
         }
     },
     components: {
@@ -168,48 +165,55 @@ export default {
             //     if (this.transactionAmount.match(regAmount)) {
             //         console.log('сумма верна')
             //     }
-            if(this.category){
-                let walletData = {
+            if(!this.category){
+                let category = {  // слева ключи должны быть идентичны бэку
+                    title : this.inputSearchCat, 
+                    type : this.type
+                };
+                this.$store.dispatch('addCategory', category).then(result => {
+                    if(result){
+                        let categoryId = this.$store.getters.lastCategory.Id
+                        
+                        let transaction = {
+                            wallet_id : this.walletId,   // слева ключи должны быть идентичны бэку
+                            type : this.type, 
+                            total : this.total,  
+                            category: categoryId
+                        };
+
+                        this.$store.dispatch('add_transaction', transaction).then(response => {
+
+                            // TODO : очищение полей после добавления транзакции
+                            this.clearInput()
+
+                            
+                            if(response){
+                                console.log(transaction)
+                            }
+                            else{
+                                alert("Произошла ошибка");
+                            }
+                        })
+                    } 
+                })
+            } else {
+                let transaction = {
                     wallet_id : this.walletId,   // слева ключи должны быть идентичны бэку
                     type : this.type, 
                     total : this.total,  
                     category: this.category
                 };
-                this.$store.dispatch('add_transaction', walletData).then(response => {
-                if(response){
-                    console.log(walletData)
-                }
-                else{
-                    alert("Произошла ошибка");
-                    }
-                })
-                this.close()
-            }
-            else{
-                // Здесь нужно вызвать запрос на добавление категории. 
-                // Назване - inputSearchCat
-                // Тип тоже в дате
-                // После вызова данного запроса необходимо каким-то путем получить id новой категории (взять id последнего объекта из getters.categories или другой вариант)
-                // И уже выполнить добавление транзакции
-                
-                this.$store.dispatch('addCategory', categoryData)
-                    let lastCategoryId = this.$store.getters.categories.length - 1
-
-                    let categoryData = {
-                        category_id : lastCategoryId.id,   // слева ключи должны быть идентичны бэку
-                        categoryTitle : this.categoryTitle, 
-                        categoryTYpe : this.categoryType
-                    };
-                    this.$store.dispatch('add_transaction', categoryData).then(response => {
+                this.$store.dispatch('add_transaction', transaction).then(response => {
                     if(response){
-                        console.log(categoryData)
+                        this.clearInput();
+                        // console.log(transaction)
                     }
                     else{
                         alert("Произошла ошибка");
                     }
                 })
-                this.close()
             }
+            this.close()
         },
         // searbar
         selectCategory(category) {
@@ -219,6 +223,16 @@ export default {
         },
         hideList() {
             this.isVisible = false;
+        },
+        clearInput() {
+            this.walletId = 0
+            this.walletCategory = ''
+            this.type = '0'
+            this.inputSearchCat = ''
+            this.category = false
+            this.isVisible = false
+            this.total = "";
+
         }
     },
     mounted(){

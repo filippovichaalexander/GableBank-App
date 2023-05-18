@@ -4,24 +4,33 @@
             <h2 class="statistics__title">Статистика за <span>Ноябрь</span></h2>
             <div class="statistics__content">
               <div class="statistics__left">
+                <select v-if="wallets" name="wallets" id="wallets" v-model="walletId">
+                  <option value="0">все кошельки</option>
+                  <option :value="wallet.Id" v-for="wallet in wallets" :key="wallet.Id">{{wallet.Title}}</option>
+                </select>
                 <div class="statistics__left-top">
                     <button class="statistics--btn statistics--btn-exps" 
                     :style="{backgroundColor: btnColor ? 'LightGreen' : 'none'}"
-                    @click="setStatsExps"
+                    @click="setStatsOutcome"
                     >Расходы</button>
                   <button class="statistics--btn statistics--btn-income" 
                   :style="{backgroundColor: btnColor ? 'none' : 'LightSteelBlue'}"
                   @click="setStatsIncome"
                   >Поступления</button>
                 </div>
-                <div v-if="stats === 'exps'">
-                  <div class="statistics__exps"  v-for="transactedCategory in transactedCategoriesIncome" :key="transactedCategory.id">
-                    <p class="statistics__item statistics__item--exps">{{transactedCategory.name}}&nbsp;<span>{{transactedCategory.total}}</span><span class="statistics--currency">{{wallet.currency}}</span></p>
-                    <p class="statistics__item statistics__item--exps">Турагенства&nbsp;<span>54,55</span><span class="statistics--currency">$</span></p>
+                <div v-if="stats === 'outcome'">
+                  <!-- <div class="statistics__exps" v-if="walletCategoriesIncome"> -->
+                    <!-- <p class="statistics__item statistics__item--exps"  v-for="category in walletCategoriesIncome" :key="category">{{category.Title}}&nbsp;<span>Total</span>
+                    </p> -->
+                    <select v-if="wallets" name="categories" id="categories" v-model="categoryId">
+                      <option value="0">все категории</option>
+                      <option :value="category.id" v-for="category in walletCategoriesIncome" :key="category">{{category.Title}}<span class="statistics--currency">{{wallet}}wall</span></option>
+                    </select>
+                    <!-- <p class="statistics__item statistics__item--exps">Турагенства&nbsp;<span>54,55</span><span class="statistics--currency">$</span></p>
                     <p class="statistics__item statistics__item--exps">Фастфуд&nbsp;<span>50,55</span><span class="statistics--currency">$</span></p>
                     <p class="statistics__item statistics__item--exps">Супермаркеты&nbsp;<span>50,55</span><span class="statistics--currency">$</span></p>
-                    <p class="statistics__item statistics__item--exps">Топливо&nbsp;<span>30,55</span><span class="statistics--currency">$</span></p>
-                  </div>
+                    <p class="statistics__item statistics__item--exps">Топливо&nbsp;<span>30,55</span><span class="statistics--currency">$</span></p> -->
+                  <!-- </div> -->
                 </div>
                 <div class="statistics__income" v-else>
                   <p class="statistics__item statistics__item--income">Рестораны&nbsp;<span>50,55</span><span class="statistics--currency">$</span></p>
@@ -31,7 +40,7 @@
                   <p class="statistics__item statistics__item--income">Топливо&nbsp;<span>30,55</span><span class="statistics--currency">$</span></p>
                 </div>
               </div>
-              
+
               <div class="statistics__right">
                 <svg class="chart" width="300" height="300" viewBox="0 0 50 50">
                   <circle class="unit" r="15.9" cx="50%" cy="50%"></circle>
@@ -52,34 +61,52 @@ export default {
     // name: Statistics,
     data() {
         return {
-            stats: 'exps', //обязательно ли здесь принимать только строку ?
+            stats: 'outcome', //обязательно ли здесь принимать только строку ?
             btnColor: true,  
-            // walletId: 0,
+            walletId: 0,
+            categoryId: 0
         }
     },
+    // props: {
+    //   walletId : Number              // как получить Id этого кошелька ? чтобы получить Id нужен кошелек из getters...
+    // },
     computed: {
-      transactedCategoriesIncome() {   // только те категории у которых поле income 
-        if(this.$store.state.transactedCategories.income === 1) {
-          return this.$store.state.transactedCategories
-        //  this.$store.state.transactedCategories.filter(cat => cat.income)
-        }
+      categories(){
+        return this.$store.getters.categories;
       },
-      wallet() {     // как взять wallet в котором я нахожусь ?
+      walletCategoriesIncome() {
+        return this.$store.getters.walletCategoriesIncome
+      },
+      walletCategoriesOutcome() {
+
+      },
+      wallet() {    
         if(this.walletId != 0){
-            return this.$store.getters.wallet(this.walletId);                
+          return this.$store.getters.wallet(this.walletId);                
         }  
       },
+      wallets() {
+        return this.$store.getters.wallets
+      }
     },
     methods: {
-        setStatsExps() {
-            this.stats = 'exps',
+        setStatsOutcome() {
+            this.stats = 'outcome',
             this.btnColor = !this.btnColor
         },
         setStatsIncome() {
             this.stats = 'income',
             this.btnColor = !this.btnColor
         }
-    }   
+    },
+    mounted(){
+      if(!this.categories){
+        this.$store.dispatch("getCategories");
+      }
+      if(!this.wallet){
+        this.$store.dispatch("getWallets");
+      }
+    }
 }
 </script>
 

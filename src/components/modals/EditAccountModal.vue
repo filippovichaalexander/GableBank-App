@@ -2,7 +2,7 @@
   <Modal @close="this.close()" :displayModal="displayModal">
     <div class="modal__window-bottom">
       <div class="modal__header">
-          <h1 class="modal__title">Измените счёт {{ walletTitle }}</h1>
+          <h1 class="modal__title">Измените счёт {{ wallet.Title }}</h1>
           <!-- Опрокинуть название счёта -->
       </div>
       <div class="modal__content">
@@ -10,18 +10,14 @@
             <div class="modal__currency">
               <input placeholder="Измените название счета" v-model="title" />
               <select name="currency" id="currency" class="modal__currency-sel" v-model="currency">
-                  <!-- <option value="" disabled="disabled" selected="selected" class="select-header">Измените валюту</option> -->
+                  <!-- <option value="" disabled="disabled" selected="selected" class="select-header">{{wallet.Currency}}</option> -->
                   <option 
-                  value="USD" 
-                  v-for="currency in allCurrencies" 
+                  value="currency" 
+                  v-for="currency in currencies" 
                   :key="currency" 
-                  selected="{{wallet.Currency}}" 
-                  >USD</option>
-                   <!-- как сделать selected="{{wallet.Currency}}" через computed wallet  - выше -->
-                  <option value="RUB">RUB</option>
-                  <option value="BGN">BGN</option>
-                  <option value="RON">RON</option>
-                  <option value="ISK">ISK</option>
+                  selected="{{wallet.Currency}}"
+                  >{{currency}}</option>                       
+                  <!-- // selected не передается            -->
                 </select>              
             </div>
             <div class="modal__purpose">
@@ -70,10 +66,8 @@ export default {
   data() {
     return {
       viewPurpose: false,
-      
       title: '',
       currency: ''
-
     }
   },
   components: {
@@ -84,14 +78,14 @@ export default {
     walletId : Number
   },
   computed: {
-    walletTitle() {                         
-      return this.$store.getters.wallet(this.walletId).Title;                
-    },
+    // walletTitle() {                         
+    //   return this.$store.getters.wallet(this.walletId).Title;                
+    // },
     wallet() {
       return this.$store.getters.wallet(this.walletId); 
     },
-    allCurrencies() {
-      return this.$store.getters.allCurrencies
+    currencies() {
+      return this.$store.getters.currencies
     }
   },
   updated(){

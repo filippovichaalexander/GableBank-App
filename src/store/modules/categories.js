@@ -16,7 +16,7 @@ export default {
         ...data,
         auth : context.getters.token
       };
-      const res = await fetch('https://money.aprograms.ru?class=User&action=add', {
+      const res = await fetch('https://money.aprograms.ru?class=Category&action=add', {
         method: 'POST',
         headers: {
           "Content-Type" : "application/json;charset=utf-8"
@@ -25,7 +25,7 @@ export default {
       })
       if (res.ok) { // 200
         let result = await res.json(); //  result это уже объект от сервера
-        context.dispatch("getCategories", result);
+        await context.dispatch("getCategories", result);
       }
       return res.ok;
   },
@@ -33,10 +33,12 @@ export default {
   mutations : {
     setCategories(state, data) {
       state.categories = data
-      console.log(data);
     }
   },
   getters : {
-    categories : state => state.categories
+    categories : state => state.categories,
+    lastCategory : state => (state.categories) ? state.categories[state.categories.length - 1] : false,
+    walletCategoriesIncome : state => (state.categories) ? state.categories.filter(cat => Number(cat.Type) === 1) : false
+    
   }
 }
